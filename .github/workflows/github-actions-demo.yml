@@ -13,5 +13,5 @@ jobs:
         run: |
           echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
           echo "Running additional commands..."
-          echo " hola desde sistemas distribuidos"
+          echo " hola desde sistemas distribuidos usando la rama  ${{ github.ref }}"
           # Add your additional commands here
