@@ -19,3 +19,4 @@ jobs:
         uses: actions/checkout@v4
       - run: |
            echo "💡 The ${{ github.repository }} repository has been cloned "
+           ls -lah
