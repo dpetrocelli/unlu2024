@@ -20,3 +20,4 @@ jobs:
       - run: |
            echo "💡 The ${{ github.repository }} repository has been cloned "
            ls -lah
+           bash script.sh
