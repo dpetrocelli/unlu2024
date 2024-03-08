@@ -4,8 +4,17 @@
 sudo apt update
 
 # Install Node.js 18.x
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt-get install -y nodejs
+sudo apt install -y nodejs
+
 
 # Install OpenJDK
-sudo apt-get install -y openjdk-21-jdk
+sudo apt install -y openjdk-18-jdk
+sudo apt install -y mvn
+java --version
+nodejs --version
+
+sudo apt install nginx
+sudo systemctl enable nginx
+sudo systemctl start nginx
+
+sudo systemctl status nginx
