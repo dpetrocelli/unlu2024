@@ -1,7 +1,39 @@
-4 drwxrwxr-x 4 david david 4096 mar  5 20:39 .
-4 drwxrwxr-x 4 david david 4096 mar  5 18:20 ..
-4 drwxrwxr-x 8 david david 4096 mar  5 20:51 .git
-4 drwxrwxr-x 3 david david 4096 mar  5 20:40 .github
-4 -rw-rw-r-- 1 david david   10 mar  5 18:20 README.md
-0 -rw-rw-r-- 1 david david    0 mar  5 18:21 sample.txt
-4 -rw-rw-r-- 1 david david  661 mar  5 20:44 script.sh
+Maquina HOST
+Lubuntu (python)
+Virtual Box (Máquinas virtual)
+IP .1
+
+HOST -> VirtualBOX -> VM -> SO -> APPS
+* VM1 
+SO Windows -> tool/apps java
+Disco
+memoria
+cpu
+IP .2
+
+* VM2 
+SO ubuntu  -> tool/apps node
+Disco
+memoria
+cpu
+IP .3
+
+* VM3 
+osx,   -> tool/apps X
+Disco
+memoria
+cpu
+IP .4
+
+telnet vm1 a vm3 -< telenet IP .1:80
+---
+
+Contenedores (Docker)
+HOST -> Docker -> Contenedor (APPS)
+Maquina HOST
+Lubuntu (python)
+CONTENEDOR - tool/apps
+
+Contenedor corra un servidor nodejs
+
+
