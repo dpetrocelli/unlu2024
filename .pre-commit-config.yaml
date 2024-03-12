@@ -1,0 +1,53 @@
+repos:
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.88.1 # Specify the desired version, or use 'latest' for the latest release
+    hooks:
+      - id: terraform_fmt
+        args:
+          - --recursive
+          - --dir=SD2024/class3
+          - --args=-diff
+          - --args=-write=true
+          - --args=-no-color
+        stages: [commit]
+      - id: terraform_docs
+        stages: [commit]
+      - id: terraform_tflint
+        files: \.tf$
+        args:
+          - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
+        stages: [commit]
+    # hooks:
+    #   - id: terraform_fmt
+    #     args:
+    #       - --args=-no-color
+    #       - --args=-diff
+    #       - --args=-write=false
+
+    #   - id: terraform_docs
+    #     args:
+    #       - "--hook-config=--path-to-file=README23.md"  # Removed extra spaces
+    #       - "--hook-config=--add-to-existing-file=true"
+    #       - "--hook-config=--create-file-if-not-exist=true"
+    #       - "--hook-config=--use-standard-markers=true"
+  - repo: https://github.com/gruntwork-io/pre-commit
+    rev: v0.1.23
+    hooks:
+      - id: terragrunt-hclfmt
+      - id: tflint
+        args:
+          - "--config=__foo__/.tflint.hcl"
+          # args:
+          #   - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2 # Specify the desired version of Gitleaks
+    hooks:
+      - id: gitleaks
+  # - repo: local
+  #   hooks:
+  #     - id: gitleaks
+  #       name: gitleaks
+  #       description: Gitleaks is a SAST tool for detecting hardcoded secrets like passwords, api keys, and tokens in git repos.
+  #       entry: gitleaks protect
+  #       language: system
+  #       files: '.*'
