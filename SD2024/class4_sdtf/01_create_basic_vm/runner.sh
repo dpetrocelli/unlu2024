@@ -5,7 +5,7 @@ echo "Checking sshkey! "
 sshkey_name=$HOME/.ssh/gcp
 if [ -f "$sshkey_name" ]
 then
-    echo "SSH Key already exists"
+    echo "SSH Key already exists "
 else
    echo "Key not found"
    ssh-keygen -f $sshkey_name -t rsa -N '' -C "dmpetrocelli@gmail.com"
