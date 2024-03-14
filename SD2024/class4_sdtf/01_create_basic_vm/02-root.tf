@@ -1,5 +1,5 @@
 module "compute-engine" {
-  source         = "./modules/hijo1_compute_module"
+  source         = "./modules/compute_module"
   instance_name  = var.instance_name
   instance_type  = var.instance_type
   project-tags   = var.project-tags
@@ -13,7 +13,7 @@ module "compute-engine" {
 }
 
 module "networking" {
-  source       = "./modules/hijo2_networking_module"
+  source       = "./modules/networking_module"
   name         = var.vpc
   project      = var.project_id
   project-tags = var.project-tags

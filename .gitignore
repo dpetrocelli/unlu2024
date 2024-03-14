@@ -17,7 +17,7 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 .terragrunt-cache
-
+*credentials.json
 # Local .terraform directories
 **/.terraform/*
 

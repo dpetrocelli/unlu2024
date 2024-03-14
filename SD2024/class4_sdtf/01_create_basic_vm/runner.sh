@@ -13,8 +13,9 @@ else
 fi
 
 
-filepath=$(dirname $(pwd))/10_00_credentials/terraform.json
-bucket_name="unlu-tf-state"
+filepath="../../credentials/credentials.json"
+
+bucket_name="tf-state"
 prefix="terraform/state"
 
 terraform init --reconfigure --var credentials_file_path=$filepath \
@@ -28,5 +29,5 @@ terraform validate
 
 #terraform apply --auto-approve  --var credentials_file_path=$filepath --var privatekeypath="~/.ssh/gcp" --var publickeypath="~/.ssh/gcp.pub" --var instance_count="1"
 
-terraform destroy --auto-approve  --var credentials_file_path=$filepath --var privatekeypath="~/.ssh/gcp" --var publickeypath="~/.ssh/gcp.pub"
+#terraform destroy --auto-approve  --var credentials_file_path=$filepath --var privatekeypath="~/.ssh/gcp" --var publickeypath="~/.ssh/gcp.pub"
 

@@ -29,7 +29,7 @@ variable "project-tags" {
 
 variable "credentials_file_path" {
   description = "Path to GCP service account credentials file"
-  default     = "./terraform.json"
+  default     = "./SD2024/credentials/credentials.json"
 }
 
 variable "project_id" {
