@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# #!/bin/bash
+
+# # Run git status and extract the folder structure for files with changes
+# folder_structure=$(git status --porcelain | awk '/^??/ {print $2}' | xargs -I{} dirname {} | sort -u)
+
+
+# # Once folder are obtained, execute personalized pre-commit commands
+# for folder in $folder_structure; do
+#     ./SD2024/scripts/precommit.sh "$folder"
+# done
 
 # Check if the folder path argument is provided
 if [ $# -eq 0 ]; then
