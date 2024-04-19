@@ -62,6 +62,6 @@ gcloud compute firewall-rules create allow-ssh --direction=INGRESS --priority=10
 #ip="34.138.176.16"
 
 #ssh -i  ./id_rsa_example dmpetrocelli@$ip
- ssh -i id_rsa_example dmpetrocelli@34.138.176.161
+ ssh -o StrictHostKeyChecking=no -i id_rsa_example dmpetrocelli@34.138.176.161
 
 

@@ -54,3 +54,9 @@ terraform.rc
 .terragrunt-cache/
 terraform.tfstate.d/
 
+.history/**
+.**DS_Store**
+**.zip**
+**.tar.**
+SD2024/class5_sobel/ejemplo/**
+**.env**

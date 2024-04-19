@@ -20,5 +20,5 @@ jobs:
       - run: |
            echo "💡 The ${{ github.repository }} repository has been cloned "
            ls -lah
-           echo " -------"
-           bash script.sh
+           echo " HOLA 2"
+           

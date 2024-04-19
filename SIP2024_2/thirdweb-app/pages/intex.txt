@@ -1,0 +1,67 @@
+import { useContract, Web3Button } from "@thirdweb-dev/react";
+import Web3 from 'web3'; // Import Web3
+const contractAddress =  "0x520A4AF017AF64EcE24BB7B784413f90B3f2a671";
+const address = "0x31F04Ae78546D580B4a436E78C6E8162Ba877ee1"
+
+function utf8ToHex(str) {
+  return Array.from(str).map(c => 
+    c.charCodeAt(0) < 128 ? c.charCodeAt(0).toString(16) : 
+    encodeURIComponent(c).replace(/\%/g,'').toLowerCase()
+  ).join('');
+}
+
+export default function Home() {
+  const { contract } = useContract(contractAddress);
+
+  return (
+  //   <Web3Button
+  //     contractAddress={contractAddress}
+  //     action={async (contract) => {
+  //       // Replace 'mint' with the appropriate method for minting ERC-1155 tokens
+  //       return await contract.methods.mintTo(
+  //         // Pass appropriate parameters for minting ERC-1155 tokens
+  //         contractAddress,
+  //         0, // ID of the token
+  //         1, // Quantity to mint
+  //         {
+  //           name: "My zkEVM NFT",
+  //           description: "I just minted an NFT on the Polygon zkEVM!",
+  //           image: "https://plus.unsplash.com/premium_photo-1666863911660-d64fc1022c12?q=80&w=2910&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  //         }
+  //       ).send({ from: yourWalletAddress });
+  //     }}
+  //   >
+  //     Mint NFT
+  //   </Web3Button>
+  // );
+
+  
+  <Web3Button
+      contractAddress={contractAddress}
+      action={async (contract, utils) => {
+        if (!address) {
+          console.error("Wallet not connected");
+          return;
+        }
+        const tokenId = 0; // Example token ID
+        const quantity = 1; // Example quantity
+        const data = utf8ToHex(JSON.stringify({
+          name: "My zkEVM NFT",
+          description: "I just minted an NFT on the Polygon zkEVM!",
+          image: "https://plus.unsplash.com/premium_photo-1666863911660-d64fc1022c12?q=80&w=2910&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90oy1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        })); // Encoding metadata to hex format
+        
+        const value = Web3.utils.toWei("0.01", 'ether'); // Adjust the price as necessary
+        
+        return contract.methods.mintTo(
+          address, // Recipient address
+          tokenId,
+          quantity,
+          data
+        ).send({ from: address, value });
+      }}
+    >
+      Mint NFT
+    </Web3Button>
+  );
+}
