@@ -8,17 +8,14 @@ on:
 jobs:
   otro-nombre:
     runs-on: ubuntu-latest
-    steps:
-      - name: Run Commands
-        run: |
-          echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-          echo "Running additional commands..."
-          echo " hola desde sistemas distribuidos usando la rama  ${{ github.ref }}"
-          
+    steps:    
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: |
            echo "💡 The ${{ github.repository }} repository has been cloned "
            ls -lah
+           cd SD2024/class5_sobel/dockerimage/nodejs-web-server
+
+           ls -lah 
            echo " HOLA 2"
            
