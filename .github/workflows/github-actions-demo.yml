@@ -6,16 +6,17 @@ on:
       - main
 
 jobs:
-  otro-nombre:
+  pipeline1:
     runs-on: ubuntu-latest
     steps:    
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: |
            echo "💡 The ${{ github.repository }} repository has been cloned "
-           ls -lah
-           cd SD2024/class5_sobel/dockerimage/nodejs-web-server
+           
+           cd SD2024/class5_sobel/dockerimage/nodejs-web-server/dockerimage/nodejs-web-server
 
            ls -lah 
            echo " HOLA 2"
            
+
