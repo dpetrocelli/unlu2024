@@ -60,3 +60,4 @@ terraform.tfstate.d/
 **.tar.**
 SD2024/class5_sobel/ejemplo/**
 **.env**
+**node_modules**

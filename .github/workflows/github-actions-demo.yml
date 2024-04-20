@@ -15,8 +15,9 @@ jobs:
            echo "💡 The ${{ github.repository }} repository has been cloned "
            
            cd SD2024/class5_sobel/dockerimage/nodejs-web-server2
-
            ls -lah 
-           echo " HOLA 2"
+            npm i 
+           ls -lah 
+           
            
 
