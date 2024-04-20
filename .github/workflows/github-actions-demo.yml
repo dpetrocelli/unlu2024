@@ -12,12 +12,14 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: |
-           echo "💡 The ${{ github.repository }} repository has been cloned "
+          echo "💡 The ${{ github.repository }} repository has been cloned "
+          # [S1] nos paramos en la carpeta
+          cd SD2024/class5_sobel/dockerimage/nodejs-web-server2
+          # [S2] bajar las dependencias
+          npm i 
+          # [s3] correr npm outdated
+          npm outdated
            
-           cd SD2024/class5_sobel/dockerimage/nodejs-web-server2
-           ls -lah 
-            npm i 
-           ls -lah 
            
            
 
