@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "owasp": "owasp-dependency-check --project papa"
+
   },
   "repository": {
     "type": "git",
@@ -24,5 +26,8 @@
   "dependencies": {
     "express": "^4.16.4",
     "hbs": "^4.0.1"
+  },
+  "devDependencies": {
+    "owasp-dependency-check": "^0.0.21"
   }
 }
