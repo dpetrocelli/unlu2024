@@ -1,0 +1,41 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/Users/dmp/Documents/unlu2024/SIP2024/blockchain/ETH_L2/ContactBook-L2/server/contracts/ContactBook.sol": {
+      "lastModificationDate": 1712530599961,
+      "contentHash": "6d0938867d81635438f3c229bf16b8e5",
+      "sourceName": "contracts/ContactBook.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "ContactBook"
+      ]
+    }
+  }
+}

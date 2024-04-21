@@ -1,0 +1,149 @@
+::-webkit-scrollbar {
+    background: #fff;
+    border-radius: 5px;
+    width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #737373;
+    border-radius: 5px;
+    width: 6px;
+}
+
+
+body {
+    background: #000;
+    display: flex;
+    justify-content: center;
+    padding: 7.5rem;
+}
+
+.App {
+    width: 550px;
+    height: 475px;
+    display: flex;
+    padding: 0rem 2rem;
+    flex-direction: column;
+    border: 3px solid #737373;
+    border-radius: 15px;
+}
+
+h1 {
+    color: #fff;
+    font-weight: 600;
+    font-size: 2.5rem;
+}
+
+.input-field {
+    display: flex;
+    flex-direction: row;
+}
+
+input:nth-child(1) {
+    width: 140px;
+    height: 30px;
+    background: #ff914d;
+    border: none;
+    margin-right: 1rem;
+}
+
+input:nth-child(1)::placeholder {
+    color: #000;
+    font-weight: bold;
+    text-align: center;
+}
+
+input:nth-child(2) {
+    width: 250px;
+    height: 30px;
+    background: #f06543;
+    border: none;
+    margin-right: 1.2rem;
+}
+
+input:nth-child(2)::placeholder {
+    color: #000;
+    font-weight: bold;
+    text-align: center;
+}
+
+.input-field button {
+    border: none;
+    background: #38b6ff;
+    color: #fff;
+    padding: 0 1rem;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.input-field button:hover {
+    cursor: pointer;
+}
+
+h2 {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.contacts {
+    height: 250px;
+    width: 100%;
+    padding: .25rem 0;
+    overflow: auto;
+}
+
+ul {
+    height: 100%;
+    padding: 1rem 0;
+}
+
+li {
+    list-style: none;
+    height: 70px;
+    width: 95%;
+    background: #545454;
+    border-radius: 10px;
+    border: transparent;
+    display: flex;
+    flex-direction: row;
+    padding: .5rem;
+    margin-bottom: 1rem;
+    justify-content: space-between;
+}
+
+.contact-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.contact-details span {
+    color: #fff;
+}
+
+.name {
+    font-size: 1.75rem;
+    font-weight: bold;
+}
+
+.address {
+    font-weight: bold;
+    font-size: 1.15rem;
+}
+
+li button {
+    background: #ff5757;
+    border: none;
+    border-radius: 50px;
+    height: 45px;
+    width: 45px;
+    font-size: 2rem;
+    padding: .4rem;
+    color: #fff;
+}
+
+li button:hover {
+    cursor: pointer;
+}

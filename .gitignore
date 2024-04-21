@@ -54,7 +54,7 @@ terraform.rc
 .terragrunt-cache/
 terraform.tfstate.d/
 
-.history/**
+**/.history/
 .**DS_Store**
 **.zip**
 **.tar.**
