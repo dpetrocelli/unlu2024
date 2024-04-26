@@ -13,5 +13,5 @@ resource "google_compute_autoscaler" "this" {
     }
   }
 
-  depends_on = [ google_compute_instance_group_manager.this ]
+  depends_on = [google_compute_instance_group_manager.this]
 }

@@ -7,8 +7,8 @@ resource "google_compute_instance_group_manager" "this" {
   zone               = var.zone
 
   version {
-    name               = var.deploy_version
-    instance_template  = google_compute_instance_template.this.id
+    name              = var.deploy_version
+    instance_template = google_compute_instance_template.this.id
   }
 
   target_size = var.minimum_vm_size

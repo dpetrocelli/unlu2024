@@ -16,6 +16,12 @@ variable "vpc" {
 
 }
 
+variable "pepito" {
+  type    = string
+  default = "pepito"
+
+}
+
 variable "project-tags" {
   type = map(string)
   default = {
