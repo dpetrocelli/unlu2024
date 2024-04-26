@@ -55,9 +55,16 @@ terraform.rc
 terraform.tfstate.d/
 
 **/.history/
+**/env/
+
+**/.ssh/
 .**DS_Store**
 **.zip**
 **.tar.**
 SD2024/class5_sobel/ejemplo/**
 **.env**
 **node_modules**
+**.hbs**
+**/.pyc**
+**./*pythonsdk/env/
+**/*.pem

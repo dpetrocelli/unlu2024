@@ -1,0 +1,14 @@
+resource "google_compute_firewall" "load_balancer_firewall" {
+  name    = "${var.prefix}-load-balancer-firewall"
+  network = var.network
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  //target_tags   = ["load-balancer"]
+}
+
+

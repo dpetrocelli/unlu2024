@@ -1,0 +1,51 @@
+resource "google_compute_instance_group" "instance_group" {
+  name        = "${var.prefix}-instance-group"
+  description = "Instance group for load balancer"
+  zone        = var.zone
+
+  //instances = var.instance_ids
+
+  named_port {
+    name = "http"
+    port = "80"
+  }
+}
+
+resource "google_compute_health_check" "http_health_check" {
+  name = "${var.prefix}-http-health-check"
+
+  http_health_check {
+    port = "80"
+  }
+}
+
+resource "google_compute_backend_service" "backend_service" {
+  name          = "${var.prefix}-backend-service"
+  health_checks = [google_compute_health_check.http_health_check.id]
+  protocol      = "HTTP"
+
+  backend {
+    group = google_compute_instance_group.instance_group.self_link
+  }
+}
+
+resource "google_compute_url_map" "url_map" {
+  name            = "${var.prefix}-url-map"
+  default_service = google_compute_backend_service.backend_service.self_link
+}
+
+resource "google_compute_target_http_proxy" "http_proxy" {
+  name    = "${var.prefix}-http-proxy"
+  url_map = google_compute_url_map.url_map.self_link
+}
+
+resource "google_compute_global_address" "lb_ip_address" {
+  name = "${var.prefix}-lb-ip-address"
+}
+
+resource "google_compute_global_forwarding_rule" "forwarding_rule" {
+  name       = "${var.prefix}-forwarding-rule"
+  target     = google_compute_target_http_proxy.http_proxy.self_link
+  ip_address = google_compute_global_address.lb_ip_address.address
+  port_range = "80"
+}
