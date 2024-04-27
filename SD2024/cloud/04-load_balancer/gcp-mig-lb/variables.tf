@@ -10,7 +10,9 @@ variable "desc" { default = "This template is used to create nginx server instan
 variable "tags" { default = "webserver" }
 variable "desc_inst" { default = "nginx Web server instance" }
 variable "machine_type" { default = "n1-standard-1" }
-variable "source_image" { default = "custom-golden-1714059140" } //This is the family tag used when building the Golden Image with Packer.
+variable "source_image" { default = "custom-golden-1714177693" } //This is the family tag used when building the Golden Image with Packer.
+#variable "source_image" { default = "custom-golden-1714059140" } //This is the family tag used when building the Golden Image with Packer.
+
 variable "network" { default = "default" }
 #
 # Managed Instace Group

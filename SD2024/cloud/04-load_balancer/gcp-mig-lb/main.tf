@@ -49,7 +49,7 @@ resource "google_compute_region_instance_group_manager" "rmig" {
   name               = var.rmig_name
   base_instance_name = var.base_instance_name
   region             = var.region
-  target_size        = 3
+  target_size        = 1
 
   named_port {
     name = "http"

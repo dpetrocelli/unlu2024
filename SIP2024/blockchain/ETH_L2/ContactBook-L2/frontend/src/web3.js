@@ -20,7 +20,8 @@ async function getWeb3() {
       console.log (chainId)
       let wrongNetwork = true;
 
-      if (!chainId.toString().includes("80002") && (!chainId.toString().includes("2442"))) {
+      if (!chainId.toString().includes("80002") && (!chainId.toString().includes("2442")) && (!chainId.toString().includes("1101")))
+     {
           console.log("Error setting the Network");
           return null;
       }

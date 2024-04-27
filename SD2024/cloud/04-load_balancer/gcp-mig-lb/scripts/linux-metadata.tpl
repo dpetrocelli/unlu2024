@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Install Nginx
-apt-get update
-apt-get install -y nginx
-apt-get install -y stress-ng
+# apt-get update
+# apt-get install -y nginx
+# apt-get install -y stress-ng
 
 # Get the instance ID and name
 INSTANCE_ID=$(curl -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/id)

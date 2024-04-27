@@ -40,7 +40,7 @@ def execute_ssh_command(ip, username, key_path, command):
 # List and execute commands on all instances across all zones
 def list_and_execute_commands(project_id, username, key_path, command):
     credentials = service_account.Credentials.from_service_account_file(
-        '/Users/dmp/Documents/unlu2024/SD2024/credentials/credentials.json')
+        '/Users/david/Documents/code/newfolder/unlu2024/SD2024/credentials/credentials.json')
     zones = list_zones(project_id, credentials)
 
     try:
@@ -68,7 +68,7 @@ def list_and_execute_commands(project_id, username, key_path, command):
 # Example usage
 project_id = "double-freehold-416321"
 username = "tf-code"
-key_path = "/Users/dmp/Documents/unlu2024/SD2024/cloud/lpmqtp/gcp-mig-lb/.ssh/google_compute_engine"
+key_path = "/Users/david/Documents/code/newfolder/unlu2024/SD2024/cloud/04-load_balancer/gcp-mig-lb/.ssh/google_compute_engine"
 command = "sudo stress-ng --cpu 8 --io 4 --vm 8 --vm-bytes 12800000M --timeout 350s --metrics-brief"
 
 list_and_execute_commands(project_id, username, key_path, command)
