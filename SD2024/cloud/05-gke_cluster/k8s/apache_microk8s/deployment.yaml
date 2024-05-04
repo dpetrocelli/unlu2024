@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apache2-unlu
+  namespace: default
+  labels:
+    app: apache2-unlu
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: apache2-unlu
+  template:
+    metadata:
+      labels:
+        app: apache2-unlu
+    spec:
+      containers:
+        - name: apache2-unlu-container
+          image: httpd:latest
+          ports:
+            - containerPort: 80
+        - name: pepito
+          image: mariadb:latest
+          ports:
+            - containerPort: 3306
+      tolerations:
+        - key: "instance_type"
+          operator: "Equal"
+          value: "spot"
+

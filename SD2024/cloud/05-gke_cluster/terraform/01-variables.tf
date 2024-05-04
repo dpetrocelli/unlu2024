@@ -1,19 +1,19 @@
 variable "region" {
   type    = string
-  default = "us-central1"
+  default = "us-east1"
 }
 
 variable "zone" {
   type    = string
-  default = "us-central1-a"
+  default = "us-east1-b"
 }
 
-/* variable "credentials_file_path" {
+variable "credentials_file_path" {
   description = "Path to GCP service account credentials file"
-  default     = "./terraform.json"
-} */
+  default     = "../../../credentials/credentials.json"
+}
 
 variable "project_id" {
   type    = string
-  default = "sd-2023-384422"
+  default = "double-freehold-416321"
 }
