@@ -3,27 +3,34 @@ import pika
 import json
 import time
 import redis
+import random
 import hashlib
+import os
+import sys
+# Get the current script's directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# Get the parent directory
+parent_dir = os.path.dirname(current_dir)
 
-# Method to retrieve the latest block ID from Redis
-def get_latest_block_id():
-    latest_id = redis_client.get('latest_block_id')
-    if latest_id is None:
-        return 1  # If database is empty, start with ID 1
-    else:
-        return int(latest_id) + 1
+print("Parent Directory:", parent_dir)
+sys.path.append(parent_dir)
+from services.redis_utils import RedisUtils
+redis_utils = RedisUtils()
 
+# Function to calculate the hash using the provided number and base string
+def calcular_sha256(texto):
 
+    hash_sha256 = hashlib.sha256()
+    hash_sha256.update(texto.encode('utf-8'))
+  
+    return hash_sha256.hexdigest()
 
 # Method to process packages every minute
-def process_packages():
-   while True:
-        block_id = get_latest_block_id()  # Get the latest block ID
-
+def process_packages():            
         # Process messages in chunks of 5
         while True:
             package = []
-            for _ in range(5):
+            for _ in range(20):
                 method_frame, header_frame, body = channel.basic_get(queue='transactions', auto_ack=False)
                 if method_frame:
                     # Add the message to the package
@@ -35,32 +42,31 @@ def process_packages():
 
             if package:
                 # Add metadata to the block package
+                tail_elements = redis_utils.get_recent_messages()
+                
+            
+                last_element = redis_utils.get_latest_element()
+
+             
+                max_random=99999999
+                block_id= str(random.randint(0, max_random))
+                
                 block = {
                     "id": block_id,
                     "transactions": package,
-                    "prefix": "000",  # Placeholder for difficulty
-                    "base_string_chain": "asdf",  # Placeholder for the goal
-                    "random_num_max": 9999
+                    "prefix": "000000",  # Placeholder for difficulty
+                    "base_string_chain": "A4FC",  # hexa for the goal
+                    "blockchain_content": last_element["blockchain_content"] if last_element else "[]",  # the blockchain inmutability
+                    "random_num_max": max_random
                 }
-                # Publish the package to the 'blocks' topic exchange in RabbitMQ
+                # Publish the package to" the 'blocks' topic exchange in RabbitMQ
                 channel.basic_publish(exchange='block_challenge', routing_key='blocks', body=json.dumps(block))
                 print(f"Package with block ID {block_id} sent to the 'blocks' topic exchange")
-                block_id += 1  # Increment block ID for the next package
-            else:
-                break  # Break the loop if no messages were fetched
-
-        # Wait for 30 seconds before next batch processing
-        time.sleep(10)
+                  # Increment block ID for the next package
             
-# Function to calculate the hash using the provided number and base string
-def calculate_hash(base_string_chain, number):
-    hash_input = base_string_chain + str(number)
-    return hashlib.sha256(hash_input.encode()).hexdigest()
+            time.sleep(60)        
 
-# Connect to Redis
-redis_client = redis.StrictRedis(host='localhost', port=6379, db=0, password='eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81')
-
-# Connect to RabbitMQ
+        
 # Connect to RabbitMQ server
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost', port=5672,
                                                                credentials=pika.PlainCredentials('rabbitmq', 'rabbitmq')))
@@ -72,8 +78,7 @@ channel.queue_declare(queue='transactions')
 channel.exchange_declare(exchange='block_challenge', exchange_type='topic', durable=True)
 
 
-
-
+# --- APP side --- 
 app = Flask(__name__)
 
 # Endpoint to check the status of the application
@@ -81,7 +86,7 @@ app = Flask(__name__)
 def check_status():
     return jsonify({'status': 'running'})
 
-# Method to handle incoming transactions
+# Method to handle incoming transactions (READY)
 @app.route('/transaction', methods=['POST'])
 def receive_transaction():
     
@@ -99,42 +104,62 @@ def receive_transaction():
 @app.route('/solved_task', methods=['POST'])
 def receive_solved_task():
     data = request.get_json()
-    block_id = data['id']
-    block_hash = data['hash']
-    number = data['number']
-    base_string_chain = data['base_string_chain']
-    print (f"processed task is {data}")
-     # Calculate the hash using the provided number and base string
-    calculated_hash = calculate_hash(base_string_chain, number)
+
+    
+
+    
+    # Calculate the hash using the provided number and base string
+    calculated_hash = calcular_sha256(data['number'] + data['base_string_chain'] + data['blockchain_content'])
     timestamp = time.time()
-    # Validate the hash
-    print (f"calculated hash:{hash}")
-    print (f"local-calculation:{calculated_hash}")
-    if block_hash == calculated_hash:
-        # Check if block_id exists in the database
-        print ("data is valid")
-        if redis_client.exists(block_id):
-            return 'Block already solved by another node. Discarding...'
+    print("--------------------------------")
+    print(f"Received hash: {data['hash']}")
+    print(f"Locally calculated hash: {calculated_hash}")
+
+    if data['hash'] == calculated_hash:
+        print("Data is valid")
+        print("--------------------------------")
+        #Check if block_id exists in the database
+        if redis_utils.exists_id(data['id']):
+            print ("block exists")
+            return jsonify({'message': 'Block already solved by another node. Discarding...'}), 200
         else:
+            print ("block does not exists, it's time to add to the network")
+            print (f"item hash: {data['hash']}" )
+            print (f"old blockchain content: {data['blockchain_content']}" )
+            
+            blockchain_content = calcular_sha256(data['blockchain_content']+data['hash'])
+            print (f"blockchain content: {blockchain_content}" )
+            
             # Get the hash of the latest block stored in the database
-            previous_block_hash = redis_client.hget('latest_block', 'hash')
-            print (f"previous {previous_block_hash}")
-            if previous_block_hash:
-                previous_block_hash = previous_block_hash.decode('utf-8')
-                # Add timestamp and previous_block hash to the data
-                data['timestamp'] = timestamp
-                data['previous_block'] = previous_block_hash
+            try:
+                previous_block = redis_utils.get_latest_element()
+            except:
+                previous_block = 'Null'
+            if previous_block != None:
+                print("--------------------------------")
+                print(f"Previous block hash: {previous_block["hash"]}")
+                data['previous_block'] = previous_block["hash"]
+                print("--------------------------------")
             else:
-                # If it's the first block, set previous_block to null
-                data['timestamp'] = timestamp
-                data['previous_block'] = None
-            # Store block information in the database
-            redis_client.hmset(block_id, data)
-            # Update the latest_block key in the database with the current block
-            redis_client.hset('latest_block', 'hash', block_hash)
-            return 'Block validated and added to the blockchain.'
+                print("--------------------------------")
+                print(f"Previous block hash: NULL ")
+                print("--------------------------------")
+                data['previous_block'] = "None"
+            # Add timestamp and previous_block hash to the data
+            data['timestamp'] = timestamp
+            data['blockchain_content'] = blockchain_content
+                
+            print("------final-block-------")
+            print (data)
+            print("------final-block-------")
+            
+            redis_utils.post_message(message=data)
+            
+            return jsonify({'message': 'Block validated and added to the blockchain.'}), 201
+        
+          
     else:
-        return 'Invalid hash. Discarding the package.'
+        return jsonify({'message': 'Invalid hash. Discarding the package.'}), 400
         
 # Run the process_packages method in a separate thread
 import threading
