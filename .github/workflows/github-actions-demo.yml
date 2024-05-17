@@ -29,12 +29,14 @@ jobs:
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
         run: |
           gcloud config set project $PROJECT_ID
+
           # Check if the bucket exists
           if gsutil ls -p $PROJECT_ID | grep gs://$BUCKET_NAME/; then
             echo "Bucket $BUCKET_NAME already exists."
           else
             echo "Creating bucket $BUCKET_NAME..."
             gsutil mb -p $PROJECT_ID gs://$BUCKET_NAME/
+          fi
 
       - name: Write GCP Credentials to File
         run: |
@@ -59,3 +61,5 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+    
+      
