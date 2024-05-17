@@ -141,21 +141,21 @@ jobs:
         env:
           ARGOCD_PWD: ${{ env.ARGOCD_PWD }}
       
-      - name: Check if Root Application Exists
-        id: check_app
-        continue-on-error: true
-        run: |
-          argocd app get root-application
-          if [ $? -eq 0 ]; then
-            echo "Root application already exists."
-            echo "::set-output name=exists::true"
-          else
-            echo "Root application does not exist."
-            echo "::set-output name=exists::false"
-          fi
+      # - name: Check if Root Application Exists
+      #   id: check_app
+      #   continue-on-error: true
+      #   run: |
+      #     argocd app get root-application
+      #     if [ $? -eq 0 ]; then
+      #       echo "Root application already exists."
+      #       echo "::set-output name=exists::true"
+      #     else
+      #       echo "Root application does not exist."
+      #       echo "::set-output name=exists::false"
+      #     fi
 
       - name: Create Root Application
-        if: steps.check_app.outputs.exists == 'false'
+        # if: steps.check_app.outputs.exists == 'false'
         run: |
           argocd app create --file SD2024/tif/cloud-shared-services/argocd/root-project/app.yaml
 
