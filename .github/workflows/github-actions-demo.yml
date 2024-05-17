@@ -102,6 +102,9 @@ jobs:
   configure-backend:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
       - name: Setup Google Cloud
         uses: ./.github/actions/gcloud-credentials
         with:
@@ -120,3 +123,4 @@ jobs:
           else
             echo "Creating bucket $BUCKET_NAME..."
             gsutil mb -p $PROJECT_ID $BUCKET_URI
+
