@@ -100,7 +100,7 @@ jobs:
         run: |
           kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-   configure-argo:
+  configure-argo:
     needs: install-argo
     runs-on: ubuntu-latest     
       - name: Checkout code
