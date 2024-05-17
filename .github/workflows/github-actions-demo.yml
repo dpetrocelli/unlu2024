@@ -13,21 +13,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
           version: 'latest'
-          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-          export_default_credentials: true
 
-          
-          
       - name: Check and Create GCS Bucket
+        env:
+          BUCKET_NAME: tf-bucket-store-dev-unlu2024
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
         run: |
-          gcloud config set project ${{ secrets.PROJECT_ID }}
-          BUCKET_NAME="tf-bucket-store-dev-unlu2024"
-          PROJECT_ID=${{ secrets.PROJECT_ID }}
-          
+          gcloud config set project $PROJECT_ID
+
           # Check if the bucket exists
           if gsutil ls -p $PROJECT_ID | grep gs://$BUCKET_NAME/; then
             echo "Bucket $BUCKET_NAME already exists."
