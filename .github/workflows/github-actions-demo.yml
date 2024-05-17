@@ -76,7 +76,9 @@ jobs:
         uses: ./.github/actions/gcloud-credentials
         with:
           credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
-
+      - name: Install gke-gcloud-auth-plugin
+        run: gcloud components install gke-gcloud-auth-plugin
+      
       - name: Get Kubernetes Credentials
         run: |
           gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
