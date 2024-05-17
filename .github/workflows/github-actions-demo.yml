@@ -8,7 +8,6 @@ on:
 jobs:
   configure-backend:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -29,20 +28,20 @@ jobs:
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
         run: |
           gcloud config set project $PROJECT_ID
-
           # Check if the bucket exists
           if gsutil ls -p $PROJECT_ID | grep gs://$BUCKET_NAME/; then
             echo "Bucket $BUCKET_NAME already exists."
           else
             echo "Creating bucket $BUCKET_NAME..."
             gsutil mb -p $PROJECT_ID gs://$BUCKET_NAME/
-          fi
-  
+
   deploy-infra:
+    needs: configure-backend
     runs-on: ubuntu-latest
+    steps:
       - name: Write GCP Credentials to File
         run: |
-          echo "$GCP_CREDENTIALS" > gcp-credentials.json
+          echo "${{ secrets.GPC_CREDENTIALS_FILE }}" > gcp-credentials.json
         env:
           GCP_CREDENTIALS: ${{ secrets.GPC_CREDENTIALS_FILE }}
 
@@ -57,14 +56,19 @@ jobs:
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan -var="GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/gcp-credentials.json"
+        run: |
+          terraform plan -out=tfplan -var="GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/gcp-credentials.json"
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
+        run: |
+          terraform apply -auto-approve tfplan
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+
   install-configure-argo:
+    needs: deploy-infra
     runs-on: ubuntu-latest
+    steps:
       - name: Get Kubernetes Credentials
         run: |
           gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
@@ -73,6 +77,3 @@ jobs:
         run: |
           kubectl create namespace argocd
           kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-
-  
-  
