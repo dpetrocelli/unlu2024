@@ -58,8 +58,7 @@ jobs:
         run: |
           terraform plan -out=tfplan 
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp-credentials.json
+
 
       - name: Terraform Apply
         run: |
