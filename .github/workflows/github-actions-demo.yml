@@ -38,10 +38,15 @@ jobs:
             gsutil mb -p $PROJECT_ID gs://$BUCKET_NAME/
           fi
 
+      - name: Write GCP Credentials to File
+        run: |
+          echo "${{ secrets.GPC_CREDENTIALS_FILE }}" > gcp-credentials.json
+        env:
+          GCP_CREDENTIALS: ${{ secrets.GPC_CREDENTIALS_FILE }}
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GPC_CREDENTIALS_FILE }}
+
       - name: Terraform Initialize
         run: |
           terraform init \
@@ -50,8 +55,8 @@ jobs:
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
       - name: Terraform Plan
-        run: terraform plan 
+        run: terraform plan -input=false
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
         env:
           TF_LOG: DEBUG
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GPC_CREDENTIALS_FILE }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp-credentials.json
