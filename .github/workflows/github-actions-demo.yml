@@ -381,14 +381,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
       
-      - name: Main
-        run: |
-          ls -lah
-          cd .github
-          ls -lah
-          cd actions
-          ls -lah
-
       - name: Setup Google Cloud
         uses: ./.github/actions/gcloud-credentials
         with:
