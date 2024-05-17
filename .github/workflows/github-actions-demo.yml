@@ -43,7 +43,11 @@ jobs:
         uses: ./.github/actions/gcloud-credentials
         with:
           credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
-
+      - name: Create Credentials File
+        run: echo '${{ secrets.GCP_CREDENTIALS_JSON }}' > ${{ github.workspace }}/gcp-credentials.json
+        env:
+          GCP_CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS_JSON }}
+          
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
 
