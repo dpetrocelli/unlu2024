@@ -9,11 +9,11 @@ runs:
   using: 'composite'
   steps:
     - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@v1
+      uses: google-github-actions/auth@v2.1.3
       with:
         credentials_json: ${{ inputs.credentials_json }}
 
     - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v1
+      uses: google-github-actions/setup-gcloud@v2.1.0
       with:
         version: 'latest'
