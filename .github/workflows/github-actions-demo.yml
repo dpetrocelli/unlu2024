@@ -65,13 +65,10 @@ jobs:
           terraform apply -auto-approve tfplan
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
-  install-configure-argo:
+  install-argo:
     needs: deploy-infra
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.6
-
       - name: Setup Google Cloud
         uses: ./.github/actions/gcloud-credentials
         with:
@@ -102,25 +99,35 @@ jobs:
         if: steps.check_namespace.outputs.exists == 'false'
         run: |
           kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-      
+
+   configure-argo:
+    needs: install-argo
+    runs-on: ubuntu-latest     
+      - name: Checkout code
+        uses: actions/checkout@v4.1.6
       - name: Install Argo CD CLI
         run: |
           curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           chmod +x /usr/local/bin/argocd
       - name: Retrieve Argo CD API server password
-        run: |
-          ARGOCD_SERVER=$(kubectl get svc -n argocd argocd-server -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          ARGOCD_PWD=$(kubectl get pod -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2)
-          echo "ARGOCD_SERVER=$ARGOCD_SERVER" >> $GITHUB_ENV
+        run: |          
+          ARGOCD_PWD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
           echo "ARGOCD_PWD=$ARGOCD_PWD" >> $GITHUB_ENV
+      - name: Start Port Forwarding
+        run: kubectl port-forward svc/argocd-server -n argocd 8080:443 &
+        shell: bash
 
-      - name: Configure Argo CD CLI and login
-        run: |
-          argocd login $ARGOCD_SERVER --username admin --password $ARGOCD_PWD --insecure
-          # Optional: Change the default password
-          argocd account update-password --current-password $ARGOCD_PWD --new-password ${{ secrets.NEW_ARGOCD_PWD }}
+      - name: Wait for Port Forwarding
+        run: sleep 10  # wait for port forwarding to establish
+
+      - name: Login to Argo CD
+        run: argocd login localhost:8080 --username admin --password ${{ secrets.ARGOCD_PWD }} --insecure
+        env:
+          ARGOCD_PWD: ${{ secrets.ARGOCD_PWD }}
 
       - name: Sync Argo CD configuration
-        run: |
-          argocd app sync root-application
-      
+        run: argocd app sync root-application
+
+      - name: Cleanup Port Forwarding
+        if: always()
+        run: killall kubectl
