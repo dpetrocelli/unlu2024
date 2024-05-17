@@ -107,6 +107,8 @@ jobs:
       - name: Main
         run: |
           ls -lah
+          cd .github
+          ls -lah
           cd actions
           ls -lah
          
