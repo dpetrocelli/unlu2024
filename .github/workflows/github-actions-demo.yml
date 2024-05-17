@@ -78,7 +78,7 @@ jobs:
           credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
       - name: Install gke-gcloud-auth-plugin
         run: gcloud components install gke-gcloud-auth-plugin
-      
+          
       - name: Get Kubernetes Credentials
         run: |
           gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
@@ -102,3 +102,25 @@ jobs:
         if: steps.check_namespace.outputs.exists == 'false'
         run: |
           kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+      
+      - name: Install Argo CD CLI
+        run: |
+          curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x /usr/local/bin/argocd
+      - name: Retrieve Argo CD API server password
+        run: |
+          ARGOCD_SERVER=$(kubectl get svc -n argocd argocd-server -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          ARGOCD_PWD=$(kubectl get pod -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2)
+          echo "ARGOCD_SERVER=$ARGOCD_SERVER" >> $GITHUB_ENV
+          echo "ARGOCD_PWD=$ARGOCD_PWD" >> $GITHUB_ENV
+
+      - name: Configure Argo CD CLI and login
+        run: |
+          argocd login $ARGOCD_SERVER --username admin --password $ARGOCD_PWD --insecure
+          # Optional: Change the default password
+          argocd account update-password --current-password $ARGOCD_PWD --new-password ${{ secrets.NEW_ARGOCD_PWD }}
+
+      - name: Sync Argo CD configuration
+        run: |
+          argocd app sync root-application
+      
