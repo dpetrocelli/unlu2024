@@ -52,3 +52,5 @@ jobs:
       - name: Terraform Plan
         run: terraform plan 
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+        env:
+          TF_LOG: DEBUG
