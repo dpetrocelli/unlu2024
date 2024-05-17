@@ -130,4 +130,241 @@ jobs:
           else
             echo "Creating bucket $BUCKET_NAME..."
             gsutil mb -p $PROJECT_ID $BUCKET_URI
+#     runs-on: ubuntu-latest
+#     steps:
+#       steps:
+#       - name: Setup Google Cloud
+#         uses: ./.github/actions/gcloud-credentials
+#         with:
+#           credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+#       # - name: Checkout code
+#       #   uses: actions/checkout@v3
+      
+#       # - name: Authenticate to Google Cloud
+#       #   uses: google-github-actions/auth@v1
+#       #   with:
+#       #     credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+
+#       # - name: Set up Cloud SDK
+#       #   uses: google-github-actions/setup-gcloud@v1
+#       #   with:
+#       #     version: 'latest'
+
+#       - name: Check and Create GCS Bucket
+#         env:
+#           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+#           PROJECT_ID: ${{ secrets.PROJECT_ID }}
+#         run: |
+#           gcloud config set project $PROJECT_ID
+#           # Check if the bucket exists
+#           BUCKET_URI="gs://${BUCKET_NAME}/"
+#           if gsutil ls -p $PROJECT_ID | grep -q $BUCKET_URI; then
+#             echo "Bucket $BUCKET_NAME already exists."
+#           else
+#             echo "Creating bucket $BUCKET_NAME..."
+#             gsutil mb -p $PROJECT_ID $BUCKET_URI
+#           fi
+
+#   # deploy-infra:
+#   #   needs: configure-backend
+#   #   runs-on: ubuntu-latest
+#   #   steps:
+#   #     - name: Checkout code
+#   #       uses: actions/checkout@v3
+
+#   #     - name: Authenticate to Google Cloud
+#   #       uses: google-github-actions/auth@v1
+#   #       with:
+#   #         credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+
+#   #     - name: Set up Cloud SDK
+#   #       uses: google-github-actions/setup-gcloud@v1
+#   #       with:
+#   #         version: 'latest'
+
+#   #     - name: Set up Terraform
+#   #       uses: hashicorp/setup-terraform@v1
+
+#   #     - name: Terraform Initialize
+#   #       run: |
+#   #         terraform init \
+#   #           -backend-config="bucket=${{ secrets.BUCKET_NAME }}" \
+#   #           -backend-config="prefix=terraform/state"
+#   #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+
+#   #     - name: Terraform Plan
+#   #       run: |
+#   #         terraform plan -out=tfplan -var="GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/gcp-credentials.json"
+#   #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+
+#   #     - name: Terraform Apply
+#   #       run: |
+#   #         terraform apply -auto-approve tfplan
+#   #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+
+#   # install-configure-argo:
+#   #   needs: deploy-infra
+#   #   runs-on: ubuntu-latest
+#   #   steps:
+#   #     - name: Get Kubernetes Credentials
+#   #       run: |
+#   #         gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
+
+#   #     - name: Install Argo CD
+#   #       run: |
+#   #         kubectl create namespace argocd
+#   #         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+name: Deploy to GCP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  configure-backend:
+    runs-on: ubuntu-latest
+    steps:
+         
+      - name: Setup Google Cloud
+        uses: ./.github/actions/gcloud-credentials
+        with:
+          credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+
+      - name: Check and Create GCS Bucket
+        env:
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        run: |
+          gcloud config set project $PROJECT_ID
+          # Check if the bucket exists
+          BUCKET_URI="gs://${BUCKET_NAME}/"
+          if gsutil ls -p $PROJECT_ID | grep -q $BUCKET_URI; then
+            echo "Bucket $BUCKET_NAME already exists."
+          else
+            echo "Creating bucket $BUCKET_NAME..."
+            gsutil mb -p $PROJECT_ID $BUCKET_URI
+#     runs-on: ubuntu-latest
+#     steps:
+#       steps:
+#       - name: Setup Google Cloud
+#         uses: ./.github/actions/gcloud-credentials
+#         with:
+#           credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+#       # - name: Checkout code
+#       #   uses: actions/checkout@v3
+      
+#       # - name: Authenticate to Google Cloud
+#       #   uses: google-github-actions/auth@v1
+#       #   with:
+#       #     credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+
+#       # - name: Set up Cloud SDK
+#       #   uses: google-github-actions/setup-gcloud@v1
+#       #   with:
+#       #     version: 'latest'
+
+#       - name: Check and Create GCS Bucket
+#         env:
+#           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+#           PROJECT_ID: ${{ secrets.PROJECT_ID }}
+#         run: |
+#           gcloud config set project $PROJECT_ID
+#           # Check if the bucket exists
+#           BUCKET_URI="gs://${BUCKET_NAME}/"
+#           if gsutil ls -p $PROJECT_ID | grep -q $BUCKET_URI; then
+#             echo "Bucket $BUCKET_NAME already exists."
+#           else
+#             echo "Creating bucket $BUCKET_NAME..."
+#             gsutil mb -p $PROJECT_ID $BUCKET_URI
+#           fi
+
+#   # deploy-infra:
+#   #   needs: configure-backend
+#   #   runs-on: ubuntu-latest
+#   #   steps:
+#   #     - name: Checkout code
+#   #       uses: actions/checkout@v3
+
+#   #     - name: Authenticate to Google Cloud
+#   #       uses: google-github-actions/auth@v1
+#   #       with:
+#   #         credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+
+#   #     - name: Set up Cloud SDK
+#   #       uses: google-github-actions/setup-gcloud@v1
+#   #       with:
+#   #         version: 'latest'
+
+#   #     - name: Set up Terraform
+#   #       uses: hashicorp/setup-terraform@v1
+
+#   #     - name: Terraform Initialize
+#   #       run: |
+#   #         terraform init \
+#   #           -backend-config="bucket=${{ secrets.BUCKET_NAME }}" \
+#   #           -backend-config="prefix=terraform/state"
+#   #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+
+#   #     - name: Terraform Plan
+#   #       run: |
+#   #         terraform plan -out=tfplan -var="GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/gcp-credentials.json"
+#   #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+
+#   #     - name: Terraform Apply
+#   #       run: |
+#   #         terraform apply -auto-approve tfplan
+#   #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+
+#   # install-configure-argo:
+#   #   needs: deploy-infra
+#   #   runs-on: ubuntu-latest
+#   #   steps:
+#   #     - name: Get Kubernetes Credentials
+#   #       run: |
+#   #         gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
+
+#   #     - name: Install Argo CD
+#   #       run: |
+#   #         kubectl create namespace argocd
+#   #         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+name: Deploy to GCP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  configure-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Main
+        run: |
+          ls -lah
+          cd .github
+          ls -lah
+          cd actions
+          ls -lah
+         
+      - name: Setup Google Cloud
+        uses: ./.github/actions/gcloud-credentials
+        with:
+          credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+
+      - name: Check and Create GCS Bucket
+        env:
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        run: |
+          gcloud config set project $PROJECT_ID
+          # Check if the bucket exists
+          BUCKET_URI="gs://${BUCKET_NAME}/"
+          if gsutil ls -p $PROJECT_ID | grep -q $BUCKET_URI; then
+            echo "Bucket $BUCKET_NAME already exists."
+          else
+            echo "Creating bucket $BUCKET_NAME..."
+            gsutil mb -p $PROJECT_ID $BUCKET_URI
 
