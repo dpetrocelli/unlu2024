@@ -40,7 +40,8 @@ jobs:
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
-
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GPC_CREDENTIALS_FILE }}
       - name: Terraform Initialize
         run: |
           terraform init \

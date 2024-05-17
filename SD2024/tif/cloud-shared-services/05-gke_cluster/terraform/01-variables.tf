@@ -8,10 +8,14 @@ variable "zone" {
   default = "us-east1-b"
 }
 
-variable "credentials_file_path" {
-  description = "Path to GCP service account credentials file"
-  default     = "../../../credentials/credentials.json"
+# variable "credentials_file_path" {
+#   description = "Path to GCP service account credentials file"
+#   default     = "../../../credentials/credentials.json"
+# }
+variable "GOOGLE_APPLICATION_CREDENTIALS" {
+  description = "Path to Google Cloud credentials file"
 }
+
 
 variable "project_id" {
   type    = string

@@ -1,4 +1,3 @@
-
 terraform {
   required_providers {
     google = {
@@ -12,7 +11,7 @@ terraform {
 }
 
 provider "google" {
-  credentials = file(var.credentials_file_path)
+  credentials = var.GOOGLE_APPLICATION_CREDENTIALS
   project     = var.project_id
   region      = var.region
   zone        = var.zone
