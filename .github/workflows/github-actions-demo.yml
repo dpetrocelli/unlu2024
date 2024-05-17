@@ -37,6 +37,7 @@ jobs:
             echo "Creating bucket $BUCKET_NAME..."
             gsutil mb -p $PROJECT_ID gs://$BUCKET_NAME/
           fi
+
       - name: Set up Terraform
         env:
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
@@ -52,4 +53,3 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
-
