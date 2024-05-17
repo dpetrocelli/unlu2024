@@ -9,18 +9,23 @@ jobs:
   configure-backend:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
+      steps:
+      - name: Setup Google Cloud
+        uses: ./.github/actions/gcloud-credentials
         with:
           credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+      # - name: Checkout code
+      #   uses: actions/checkout@v3
+      
+      # - name: Authenticate to Google Cloud
+      #   uses: google-github-actions/auth@v1
+      #   with:
+      #     credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          version: 'latest'
+      # - name: Set up Cloud SDK
+      #   uses: google-github-actions/setup-gcloud@v1
+      #   with:
+      #     version: 'latest'
 
       - name: Check and Create GCS Bucket
         env:
@@ -37,48 +42,52 @@ jobs:
             gsutil mb -p $PROJECT_ID $BUCKET_URI
           fi
 
-  deploy-infra:
-    needs: configure-backend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        
-      - name: Write GCP Credentials to File
-        run: |
-          echo "${{ secrets.GPC_CREDENTIALS_FILE }}" > gcp-credentials.json
-        env:
-          GCP_CREDENTIALS: ${{ secrets.GPC_CREDENTIALS_FILE }}
+  # deploy-infra:
+  #   needs: configure-backend
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
+  #     - name: Authenticate to Google Cloud
+  #       uses: google-github-actions/auth@v1
+  #       with:
+  #         credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
 
-      - name: Terraform Initialize
-        run: |
-          terraform init \
-            -backend-config="bucket=${{ secrets.BUCKET_NAME }}" \
-            -backend-config="prefix=terraform/state"
-        working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+  #     - name: Set up Cloud SDK
+  #       uses: google-github-actions/setup-gcloud@v1
+  #       with:
+  #         version: 'latest'
 
-      - name: Terraform Plan
-        run: |
-          terraform plan -out=tfplan -var="GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/gcp-credentials.json"
-        working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+  #     - name: Set up Terraform
+  #       uses: hashicorp/setup-terraform@v1
 
-      - name: Terraform Apply
-        run: |
-          terraform apply -auto-approve tfplan
-        working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+  #     - name: Terraform Initialize
+  #       run: |
+  #         terraform init \
+  #           -backend-config="bucket=${{ secrets.BUCKET_NAME }}" \
+  #           -backend-config="prefix=terraform/state"
+  #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
-  install-configure-argo:
-    needs: deploy-infra
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get Kubernetes Credentials
-        run: |
-          gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
+  #     - name: Terraform Plan
+  #       run: |
+  #         terraform plan -out=tfplan -var="GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/gcp-credentials.json"
+  #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
-      - name: Install Argo CD
-        run: |
-          kubectl create namespace argocd
-          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+  #     - name: Terraform Apply
+  #       run: |
+  #         terraform apply -auto-approve tfplan
+  #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+
+  # install-configure-argo:
+  #   needs: deploy-infra
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Get Kubernetes Credentials
+  #       run: |
+  #         gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
+
+  #     - name: Install Argo CD
+  #       run: |
+  #         kubectl create namespace argocd
+  #         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
