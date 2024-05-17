@@ -12,9 +12,9 @@ variable "zone" {
 #   description = "Path to GCP service account credentials file"
 #   default     = "../../../credentials/credentials.json"
 # }
-variable "GOOGLE_APPLICATION_CREDENTIALS" {
-  description = "Path to Google Cloud credentials file"
-}
+# variable "GOOGLE_APPLICATION_CREDENTIALS" {
+#   description = "Path to Google Cloud credentials file"
+# }
 
 
 variable "project_id" {
