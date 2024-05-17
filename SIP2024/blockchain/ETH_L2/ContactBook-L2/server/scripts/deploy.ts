@@ -23,7 +23,7 @@ async function main() {
   await contract.waitForDeployment();
   const contractAddress = await contract.getAddress();
 
-  console.log("Greeter deployed to: " + `${GREEN}${contractAddress}${RESET}\n`);
+  console.log("TenisPlayer deployed to: " + `${GREEN}${contractAddress}${RESET}\n`);
 
   console.log(
     "Waiting 10 seconds before beginning the contract verification to allow the block explorer to index the contract...\n",

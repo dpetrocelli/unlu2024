@@ -10,7 +10,7 @@ async function getWeb3() {
       console.log("provider", provider)
       await provider.send("eth_requestAccounts", []);
       const signer  =  await provider.getSigner()
-      // const contract =  new ethers.Contract(contractAdd,Abi.abi,signer) 
+      const contract =  new ethers.Contract(contractAdd,Abi.abi,signer) 
       //Uncomment above if you are using contract or making a dapp
       console.log(signer.address)
       console.log("Metamask connected");
@@ -43,11 +43,14 @@ async function getWeb3() {
 export async function setupWeb3() {
   try {
     const provider = await getWeb3();
-    // Additional setup or validation can go here
-    return provider;
+    if (!provider) return null; // Early return if MetaMask not connected
+
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(contractAdd, Abi.abi, signer);
+
+    return { provider, contract }; // Return both provider and contract instance
   } catch (error) {
     console.error("Failed to setup Web3:", error);
-    // Depending on your application, you might want to return null or handle the error differently
     return null;
   }
 }

@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  configure-backend:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,7 +37,9 @@ jobs:
             echo "Creating bucket $BUCKET_NAME..."
             gsutil mb -p $PROJECT_ID gs://$BUCKET_NAME/
           fi
-
+  
+  deploy-infra:
+    runs-on: ubuntu-latest
       - name: Write GCP Credentials to File
         run: |
           echo "$GCP_CREDENTIALS" > gcp-credentials.json
@@ -59,7 +61,18 @@ jobs:
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
       - name: Terraform Apply
-        run: terraform destroy -auto-approve tfplan
+        run: terraform apply -auto-approve tfplan
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
-    
-      
+  install-configure-argo:
+    runs-on: ubuntu-latest
+      - name: Get Kubernetes Credentials
+        run: |
+          gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
+
+      - name: Install Argo CD
+        run: |
+          kubectl create namespace argocd
+          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+  
+  
