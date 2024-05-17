@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/dpetrocelli/unlu2024.git'
     targetRevision: HEAD
-    path: SD2024/tif/cloud-shared-services/argocd/root-project/
+    path: SD2024/tif/cloud-shared-services/argocd/services
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: argocd
