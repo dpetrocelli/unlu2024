@@ -83,7 +83,22 @@ jobs:
         run: |
           gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
 
-      - name: Install Argo CD
+      - name: Check if Argo CD namespace exists
+        id: check_namespace
         run: |
-          kubectl create namespace argocd
+          if kubectl get namespace argocd; then
+            echo "Namespace argocd already exists."
+            echo "::set-output name=exists::true"
+          else
+            echo "Namespace argocd does not exist."
+            echo "::set-output name=exists::false"
+          fi
+
+      - name: Create Argo CD namespace
+        if: steps.check_namespace.outputs.exists == 'false'
+        run: kubectl create namespace argocd
+
+      - name: Install Argo CD
+        if: steps.check_namespace.outputs.exists == 'false'
+        run: |
           kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
