@@ -29,19 +29,20 @@ jobs:
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
         run: |
           gcloud config set project $PROJECT_ID
+
+          # Check if the bucket exists
           if gsutil ls -p $PROJECT_ID | grep gs://$BUCKET_NAME/; then
             echo "Bucket $BUCKET_NAME already exists."
           else
             echo "Creating bucket $BUCKET_NAME..."
             gsutil mb -p $PROJECT_ID gs://$BUCKET_NAME/
+          fi
 
       - name: Write GCP Credentials to File
         run: |
           echo "$GCP_CREDENTIALS" > gcp-credentials.json
         env:
           GCP_CREDENTIALS: ${{ secrets.GPC_CREDENTIALS_FILE }}
-
-      
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
