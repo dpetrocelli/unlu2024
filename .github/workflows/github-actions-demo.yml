@@ -25,7 +25,7 @@ jobs:
 
       - name: Check and Create GCS Bucket
         env:
-          BUCKET_NAME: tf-bucket-store-dev-unlu2024
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
         run: |
           gcloud config set project $PROJECT_ID
@@ -38,6 +38,8 @@ jobs:
             gsutil mb -p $PROJECT_ID gs://$BUCKET_NAME/
           fi
       - name: Set up Terraform
+        env:
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
         uses: hashicorp/setup-terraform@v1
 
       - name: Terraform Initialize
