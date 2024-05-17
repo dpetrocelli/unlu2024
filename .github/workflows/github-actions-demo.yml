@@ -30,13 +30,14 @@ jobs:
           else
             echo "Creating bucket $BUCKET_NAME..."
             gsutil mb -p $PROJECT_ID $BUCKET_URI
-          fi
+
   deploy-infra:
     needs: configure-backend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      
       - name: Setup Google Cloud
         uses: ./.github/actions/gcloud-credentials
         with:
@@ -54,8 +55,11 @@ jobs:
 
       - name: Terraform Plan
         run: |
-          terraform plan -out=tfplan -var="GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/gcp-credentials.json"
+          terraform plan -out=tfplan \
+            -var="GOOGLE_CREDENTIALS=$(cat ${GITHUB_WORKSPACE}/gcp-credentials.json)"
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp-credentials.json
 
       - name: Terraform Apply
         run: |
@@ -68,6 +72,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Setup Google Cloud
         uses: ./.github/actions/gcloud-credentials
         with:
@@ -81,5 +86,3 @@ jobs:
         run: |
           kubectl create namespace argocd
           kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-
-
