@@ -30,6 +30,7 @@ jobs:
           else
             echo "Creating bucket $BUCKET_NAME..."
             gsutil mb -p $PROJECT_ID $BUCKET_URI
+          fi
 
   deploy-infra:
     needs: configure-backend
