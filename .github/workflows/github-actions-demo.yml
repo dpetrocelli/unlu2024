@@ -9,6 +9,9 @@ jobs:
   configure-backend:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Setup Google Cloud
         uses: ./.github/actions/gcloud-credentials
         with:
@@ -32,6 +35,8 @@ jobs:
     needs: configure-backend
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: Setup Google Cloud
         uses: ./.github/actions/gcloud-credentials
         with:
@@ -61,6 +66,8 @@ jobs:
     needs: deploy-infra
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: Setup Google Cloud
         uses: ./.github/actions/gcloud-credentials
         with:
