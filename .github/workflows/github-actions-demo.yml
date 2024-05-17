@@ -39,14 +39,12 @@ jobs:
           fi
 
       - name: Set up Terraform
-        env:
-          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
         uses: hashicorp/setup-terraform@v1
 
       - name: Terraform Initialize
         run: |
           terraform init \
-            -backend-config="bucket=${{ env.BUCKET_NAME }}" \
+            -backend-config="bucket=${{ secrets.BUCKET_NAME }}" \
             -backend-config="prefix=terraform/state"
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
