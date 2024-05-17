@@ -108,6 +108,18 @@ jobs:
     steps:    
       - name: Checkout code
         uses: actions/checkout@v4.1.6
+      - name: Checkout code
+        uses: actions/checkout@v4.1.6
+      - name: Setup Google Cloud
+        uses: ./.github/actions/gcloud-credentials
+        with:
+          credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+      - name: Install gke-gcloud-auth-plugin
+        run: gcloud components install gke-gcloud-auth-plugin
+          
+      - name: Get Kubernetes Credentials
+        run: |
+          gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
       - name: Install Argo CD CLI
         run: |
           curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
