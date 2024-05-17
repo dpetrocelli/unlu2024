@@ -41,6 +41,9 @@ jobs:
     needs: configure-backend
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
       - name: Write GCP Credentials to File
         run: |
           echo "${{ secrets.GPC_CREDENTIALS_FILE }}" > gcp-credentials.json
