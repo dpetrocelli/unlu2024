@@ -9,7 +9,7 @@ resource "google_container_cluster" "primary" {
   logging_service          = "logging.googleapis.com/kubernetes"
   monitoring_service       = "monitoring.googleapis.com/kubernetes"
   networking_mode          = "VPC_NATIVE"
-
+  deletion_protection      = false
   /* # Optional, if you want multi-zonal cluster
   node_locations = [
     "us-central1-b"
