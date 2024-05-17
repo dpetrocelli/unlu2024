@@ -12,42 +12,46 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          version: 'latest'
-
-      - name: Check and Create GCS Bucket
-        env:
-          BUCKET_NAME: tf-bucket-store-dev-unlu2024
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+      - name: List directories
         run: |
-          gcloud config set project $PROJECT_ID
+          echo "Listing root directory:"
+          ls -lah
 
-          # Check if the bucket exists
-          if gsutil ls -p $PROJECT_ID | grep gs://$BUCKET_NAME/; then
-            echo "Bucket $BUCKET_NAME already exists."
-          else
-            echo "Creating bucket $BUCKET_NAME..."
-            gsutil mb -p $PROJECT_ID gs://$BUCKET_NAME/
-          fi
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
+      # - name: Authenticate to Google Cloud
+      #   uses: google-github-actions/auth@v1
+      #   with:
+      #     credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
 
-      - name: Terraform Initialize
-        run: |
-          terraform init \
-            -backend-config="bucket=${{ env.BUCKET_NAME }}" \
-            -backend-config="prefix=terraform/state"
-        working-directory: unlu2024/SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+      # - name: Set up Cloud SDK
+      #   uses: google-github-actions/setup-gcloud@v1
+      #   with:
+      #     version: 'latest'
 
-      - name: Terraform Plan
-        run: terraform plan -out=tfplan
-        working-directory: unlu2024/SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+      # - name: Check and Create GCS Bucket
+      #   env:
+      #     BUCKET_NAME: tf-bucket-store-dev-unlu2024
+      #     PROJECT_ID: ${{ secrets.PROJECT_ID }}
+      #   run: |
+      #     gcloud config set project $PROJECT_ID
+
+      #     # Check if the bucket exists
+      #     if gsutil ls -p $PROJECT_ID | grep gs://$BUCKET_NAME/; then
+      #       echo "Bucket $BUCKET_NAME already exists."
+      #     else
+      #       echo "Creating bucket $BUCKET_NAME..."
+      #       gsutil mb -p $PROJECT_ID gs://$BUCKET_NAME/
+      #     fi
+      # - name: Set up Terraform
+      #   uses: hashicorp/setup-terraform@v1
+
+      # - name: Terraform Initialize
+      #   run: |
+      #     terraform init \
+      #       -backend-config="bucket=${{ env.BUCKET_NAME }}" \
+      #       -backend-config="prefix=terraform/state"
+      #   working-directory: unlu2024/SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+
+      # - name: Terraform Plan
+      #   run: terraform plan -out=tfplan
+      #   working-directory: unlu2024/SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
