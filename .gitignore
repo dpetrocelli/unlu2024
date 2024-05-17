@@ -24,7 +24,7 @@ override.tf.json
 # .tfstate files
 *.tfstate
 *.tfstate.*
-
+**/path/**
 # Crash log files
 crash.log
 
@@ -68,3 +68,4 @@ SD2024/class5_sobel/ejemplo/**
 **/.pyc**
 **./*pythonsdk/env/
 **/*.pem
+**/**kubeconfig**

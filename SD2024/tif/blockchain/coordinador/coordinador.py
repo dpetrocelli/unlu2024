@@ -18,12 +18,15 @@ from services.redis_utils import RedisUtils
 redis_utils = RedisUtils()
 
 # Function to calculate the hash using the provided number and base string
-def calcular_sha256(texto):
-
-    hash_sha256 = hashlib.sha256()
-    hash_sha256.update(texto.encode('utf-8'))
-  
-    return hash_sha256.hexdigest()
+# New hash function
+def enhanced_hash(data):
+    hash_val = 0
+    for byte in data.encode('utf-8'):
+        hash_val = (hash_val * 31 + byte) % (2**32)
+        hash_val ^= (hash_val << 13) | (hash_val >> 19)  # Additional bit rotation
+        hash_val = (hash_val * 17) % (2**32)  # Additional multiplication with a new constant
+        hash_val = ((hash_val << 5) | (hash_val >> 27)) & 0xFFFFFFFF  # Final bitwise operation
+    return hash_val
 
 # Method to process packages every minute
 def process_packages():            
@@ -54,7 +57,7 @@ def process_packages():
                 block = {
                     "id": block_id,
                     "transactions": package,
-                    "prefix": "000000",  # Placeholder for difficulty
+                    "prefix": "000",  # Placeholder for difficulty
                     "base_string_chain": "A4FC",  # hexa for the goal
                     "blockchain_content": last_element["blockchain_content"] if last_element else "[]",  # the blockchain inmutability
                     "random_num_max": max_random
@@ -64,7 +67,7 @@ def process_packages():
                 print(f"Package with block ID {block_id} sent to the 'blocks' topic exchange")
                   # Increment block ID for the next package
             
-            time.sleep(60)        
+            time.sleep(10)        
 
         
 # Connect to RabbitMQ server
@@ -109,7 +112,8 @@ def receive_solved_task():
 
     
     # Calculate the hash using the provided number and base string
-    calculated_hash = calcular_sha256(data['number'] + data['base_string_chain'] + data['blockchain_content'])
+    combined_data = f"{data['number']}{data['base_string_chain']}{data['blockchain_content']}"
+    calculated_hash = format(enhanced_hash(combined_data), '08x')
     timestamp = time.time()
     print("--------------------------------")
     print(f"Received hash: {data['hash']}")
@@ -126,8 +130,8 @@ def receive_solved_task():
             print ("block does not exists, it's time to add to the network")
             print (f"item hash: {data['hash']}" )
             print (f"old blockchain content: {data['blockchain_content']}" )
-            
-            blockchain_content = calcular_sha256(data['blockchain_content']+data['hash'])
+            blockchain_data = f"{data['base_string_chain']}{data['hash']}"
+            blockchain_content = format(enhanced_hash(blockchain_data), '08x')
             print (f"blockchain content: {blockchain_content}" )
             
             # Get the hash of the latest block stored in the database

@@ -1,4 +1,4 @@
-name: GitHub Actions Demo
+name: Deploy to GCP
 
 on:
   push:
@@ -6,34 +6,32 @@ on:
       - main
 
 jobs:
-  pipeline1:
+  deploy:
     runs-on: ubuntu-latest
-    steps:    
-      - name: Check out repository code
-        uses: actions/checkout@v4
-      - run: |
-          echo "💡 The ${{ github.repository }} repository has been cloned "
-          # [S1] nos paramos en la carpeta
-          cd SD2024/class5_sobel/dockerimage/nodejs-web-server2
-          # [S2] bajar las dependencias
-          npm i 
-          # [s3] correr npm outdated
-          npm outdated
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
 
-      - name: build local container
-        uses: docker/build-push-action@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
         with:
-          context: SD2024/class5_sobel/dockerimage/nodejs-web-server2/
-          tags: localbuild/testimage:latest
-          push: false
-          load: true
+          version: 'latest'
+          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          export_default_credentials: true
 
-      - name: Scan image
-        uses: anchore/scan-action@v3
-        with:
-          image: "localbuild/testimage:latest"   
-           
-           
-
+          
+          
+      - name: Check and Create GCS Bucket
+        run: |
+          gcloud config set project ${{ secrets.PROJECT_ID }}
+          BUCKET_NAME="tf-bucket-store-dev-unlu2024"
+          PROJECT_ID=${{ secrets.PROJECT_ID }}
+          
+          # Check if the bucket exists
+          if gsutil ls -p $PROJECT_ID | grep gs://$BUCKET_NAME/; then
+            echo "Bucket $BUCKET_NAME already exists."
+          else
+            echo "Creating bucket $BUCKET_NAME..."
+            gsutil mb -p $PROJECT_ID gs://$BUCKET_NAME/
+          fi
