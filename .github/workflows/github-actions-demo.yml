@@ -23,11 +23,14 @@ jobs:
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
         run: |
           gcloud config set project $PROJECT_ID
-          if gsutil ls -p $PROJECT_ID | grep -q "gs://${BUCKET_NAME}/"; then
+          # Check if the bucket exists
+          BUCKET_URI="gs://${BUCKET_NAME}/"
+          if gsutil ls -p $PROJECT_ID | grep -q $BUCKET_URI; then
             echo "Bucket $BUCKET_NAME already exists."
           else
             echo "Creating bucket $BUCKET_NAME..."
-            gsutil mb -p $PROJECT_ID "gs://${BUCKET_NAME}/"
+            gsutil mb -p $PROJECT_ID $BUCKET_URI
+          fi
 
   deploy-infra:
     needs: configure-backend
@@ -52,11 +55,14 @@ jobs:
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: |
+          terraform plan -out=tfplan 
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
+
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
+        run: |
+          terraform apply -auto-approve tfplan
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
   install-argo:
@@ -67,12 +73,12 @@ jobs:
         uses: ./.github/actions/gcloud-credentials
         with:
           credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
-
       - name: Install gke-gcloud-auth-plugin
         run: gcloud components install gke-gcloud-auth-plugin
-      
+          
       - name: Get Kubernetes Credentials
-        run: gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
+        run: |
+          gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
 
       - name: Check if Argo CD namespace exists
         id: check_namespace
@@ -96,21 +102,18 @@ jobs:
 
   configure-argo:
     needs: install-argo
-    runs-on: ubuntu-latest
-    steps:
+    runs-on: ubuntu-latest 
+    steps:    
       - name: Checkout code
         uses: actions/checkout@v4.1.6
-
       - name: Install Argo CD CLI
         run: |
           curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           chmod +x /usr/local/bin/argocd
-
       - name: Retrieve Argo CD API server password
-        run: |
+        run: |          
           ARGOCD_PWD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
           echo "ARGOCD_PWD=$ARGOCD_PWD" >> $GITHUB_ENV
-
       - name: Start Port Forwarding
         run: kubectl port-forward svc/argocd-server -n argocd 8080:443 &
         shell: bash
