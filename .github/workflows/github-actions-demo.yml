@@ -55,7 +55,7 @@ jobs:
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
       - name: Terraform Plan
-        run: terraform plan -var="credentials_file_path=${{ github.workspace }}/gcp-credentials.json"
+        run: terraform plan -var="GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/gcp-credentials.json"
 
         working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
         env:
