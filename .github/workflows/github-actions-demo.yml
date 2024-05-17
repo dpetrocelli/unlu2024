@@ -69,6 +69,8 @@ jobs:
     needs: deploy-infra
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.6
       - name: Setup Google Cloud
         uses: ./.github/actions/gcloud-credentials
         with:
