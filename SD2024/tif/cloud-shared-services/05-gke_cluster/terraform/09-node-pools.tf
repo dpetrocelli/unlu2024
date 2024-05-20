@@ -9,6 +9,7 @@ resource "google_container_node_pool" "general" {
   cluster    = google_container_cluster.primary.id
   node_count = 3
 
+
   management {
     auto_repair  = true
     auto_upgrade = true
@@ -22,6 +23,7 @@ resource "google_container_node_pool" "general" {
   node_config {
     preemptible  = true
     machine_type = "e2-medium"
+    disk_size_gb = 20
 
     labels = {
       role = "general"
