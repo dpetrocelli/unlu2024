@@ -1,18 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root-application
+  name: dev-app
   namespace: argocd
 spec:
-  project: default
+  project: root-application
   source:
-    repoURL: 'https://github.com/dpetrocelli/unlu2024.git'
+    repoURL: 'https://github.com/dpetrocelli/argocd-apps.git'
     targetRevision: HEAD
-    path: SD2024/tif/cloud-shared-services/argocd/services
+    path: services/definitions  # Adjust this path to the actual path in the repository
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: services
   syncPolicy:
     automated:
-      prune: true
       selfHeal: true
+      prune: true
