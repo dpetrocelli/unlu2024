@@ -68,6 +68,7 @@ jobs:
   install-argo:
     needs: deploy-infra
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'argo')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.6
@@ -105,6 +106,7 @@ jobs:
   configure-argo:
     needs: install-argo
     runs-on: ubuntu-latest 
+    if: contains(github.event.head_commit.message, 'argo')
     steps:    
       - name: Checkout code
         uses: actions/checkout@v4.1.6
@@ -157,10 +159,16 @@ jobs:
       - name: Create Root Application
         # if: steps.check_app.outputs.exists == 'false'
         run: |
+          argocd proj create root-application \
+        --description 'Root application project for managing all apps' \
+        --src '*' \
+        --dest '*', '*' \
+        --allow-cluster-resource '*' '*'
+          argocd proj add-destination root-application https://kubernetes.default.svc services
           argocd app create --file SD2024/tif/cloud-shared-services/argocd/root-project/app.yaml
 
       - name: Sync Argo CD configuration
-        run: argocd app sync root-application
+        run: argocd app sync dev-app
 
       - name: Cleanup Port Forwarding
         if: always()

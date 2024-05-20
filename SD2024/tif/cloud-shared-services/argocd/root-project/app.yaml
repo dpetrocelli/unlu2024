@@ -1,18 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: dev-app
-  namespace: argocd
+  name: app-of-apps
 spec:
-  project: root-application
+  destination:
+    name: in-cluster
+    namespace: argocd
   source:
+    path: services/definitions 
     repoURL: 'https://github.com/dpetrocelli/argocd-apps.git'
     targetRevision: HEAD
-    path: services/definitions  # Adjust this path to the actual path in the repository
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: services
+  project: default
   syncPolicy:
     automated:
-      selfHeal: true
       prune: true
+      selfHeal: true
