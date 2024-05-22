@@ -158,7 +158,6 @@ jobs:
       #       echo "Root application does not exist."
       #       echo "::set-output name=exists::false"
       #     fi
-
       - name: Create Root Application
         # if: steps.check_app.outputs.exists == 'false'
         run: |
