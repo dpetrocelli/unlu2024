@@ -68,7 +68,7 @@ jobs:
   install-argo:
     needs: deploy-infra
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, 'argo')
+    if: contains(github.event.head_commit.message, 'argo-i')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.6
@@ -99,7 +99,7 @@ jobs:
         run: | 
           kubectl create namespace argocd
           kubectl create namespace services
-          kubectl create quota argocd-quota --namespace=argocd --hard=limits.cpu=3,limits.memory=3Gi,requests.cpu=3,requests.memory=3Gi
+          #kubectl create quota argocd-quota --namespace=argocd --hard=limits.cpu=3,limits.memory=3Gi,requests.cpu=3,requests.memory=3Gi
 
       - name: Install Argo CD
         if: steps.check_namespace.outputs.exists == 'false'
@@ -109,10 +109,8 @@ jobs:
   configure-argo:
     needs: install-argo
     runs-on: ubuntu-latest 
-    if: contains(github.event.head_commit.message, 'argo')
+    if: contains(github.event.head_commit.message, 'argo-ic')
     steps:    
-      - name: Checkout code
-        uses: actions/checkout@v4.1.6
       - name: Checkout code
         uses: actions/checkout@v4.1.6
       - name: Setup Google Cloud
@@ -132,7 +130,7 @@ jobs:
       
       - name: Start Port Forwarding
         run: |
-          kubectl wait --for=condition=available --timeout=60s deploy/argocd-server -n argocd
+          kubectl wait --for=condition=available --timeout=120s deploy/argocd-server -n argocd
           kubectl port-forward svc/argocd-server -n argocd 8080:443 &
           sleep 10  # Gives additional time for the port forwarding to establish
         shell: bash
