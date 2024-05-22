@@ -3,5 +3,5 @@ pika
 redis
 requests
 numpy
-pip install cupy-cuda11x
+cupy-cuda12x
 
