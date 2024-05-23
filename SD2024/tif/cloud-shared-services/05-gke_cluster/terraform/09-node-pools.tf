@@ -22,8 +22,8 @@ resource "google_container_node_pool" "general" {
 
   node_config {
     preemptible  = true
-    machine_type = "e2-medium"
-    disk_size_gb = 20
+    machine_type = "e2-standard-2"
+    disk_size_gb = 10
 
     labels = {
       role = "general"

@@ -107,6 +107,7 @@ jobs:
           kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
   configure-argo:
+    needs: deploy-infra
     # needs: install-argo
     runs-on: ubuntu-latest 
     if: contains(github.event.head_commit.message, 'argo-cc')
@@ -159,8 +160,8 @@ jobs:
       - name: Create Root Application
         # if: steps.check_app.outputs.exists == 'false'
         run: |
-          
-          argocd app create --file SD2024/tif/cloud-shared-services/argocd/root-project/app.yaml
+          argocd app create --file SD2024/tif/cloud-shared-services/argocd/root-project/01-infra-services-appproject.yaml
+          argocd app create --file SD2024/tif/cloud-shared-services/argocd/root-project/02-app-services-appproject.yaml
 
       - name: Sync Argo CD configuration
         run: argocd app sync dev-app

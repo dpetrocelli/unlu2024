@@ -13,7 +13,7 @@ spec:
     path: services/definitions 
     repoURL: 'https://github.com/dpetrocelli/argocd-apps.git'
     targetRevision: HEAD
-  project: infra-services
+  project: infra-services2
   syncPolicy:
     automated:
       prune: true
