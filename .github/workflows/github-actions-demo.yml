@@ -6,64 +6,65 @@ on:
       - main
 
 jobs:
-  # configure-backend:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4.1.6
+  configure-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.6
 
-  #     - name: Setup Google Cloud
-  #       uses: ./.github/actions/gcloud-credentials
-  #       with:
-  #         credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+      - name: Setup Google Cloud
+        uses: ./.github/actions/gcloud-credentials
+        with:
+          credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
 
-  #     - name: Check and Create GCS Bucket
-  #       env:
-  #         BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
-  #         PROJECT_ID: ${{ secrets.PROJECT_ID }}
-  #       run: |
-  #         gcloud config set project $PROJECT_ID
-  #         # Check if the bucket exists
-  #         BUCKET_URI="gs://${BUCKET_NAME}/"
-  #         if gsutil ls -p $PROJECT_ID | grep -q $BUCKET_URI; then
-  #           echo "Bucket $BUCKET_NAME already exists."
-  #         else
-  #           echo "Creating bucket $BUCKET_NAME..."
-  #           gsutil mb -p $PROJECT_ID $BUCKET_URI
-  #         fi
+      - name: Check and Create GCS Bucket
+        env:
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        run: |
+          gcloud config set project $PROJECT_ID
+          # Check if the bucket exists
+          BUCKET_URI="gs://${BUCKET_NAME}/"
+          if gsutil ls -p $PROJECT_ID | grep -q $BUCKET_URI; then
+            echo "Bucket $BUCKET_NAME already exists."
+          else
+            echo "Creating bucket $BUCKET_NAME..."
+            gsutil mb -p $PROJECT_ID $BUCKET_URI
+          fi
 
-  # deploy-infra:
-  #   needs: configure-backend
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4.1.6
+  deploy-infra:
+    needs: configure-backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.6
       
-  #     - name: Setup Google Cloud
-  #       uses: ./.github/actions/gcloud-credentials
-  #       with:
-  #         credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+      - name: Setup Google Cloud
+        uses: ./.github/actions/gcloud-credentials
+        with:
+          credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
 
-  #     - name: Set up Terraform
-  #       uses: hashicorp/setup-terraform@v3.1.1
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3.1.1
 
-  #     - name: Terraform Initialize
-  #       run: |
-  #         terraform init \
-  #           -backend-config="bucket=${{ secrets.BUCKET_NAME }}" \
-  #           -backend-config="prefix=terraform/state"
-  #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+      - name: Terraform Initialize
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.BUCKET_NAME }}" \
+            -backend-config="prefix=terraform/state"
+        working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
-  #     - name: Terraform Plan
-  #       run: |
-  #         terraform plan -out=tfplan 
-  #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+      - name: Terraform Plan
+        run: |
+          terraform plan -out=tfplan 
+        working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
 
-  #     - name: Terraform Apply
-  #       run: |
-  #         terraform apply -auto-approve tfplan
-  #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+      - name: Terraform Apply
+        run: |
+          terraform destroy -auto-approve 
+          #tfplan
+        working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
   # install-argo:
   #   needs: deploy-infra
@@ -107,75 +108,75 @@ jobs:
   #       run: |
   #         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-  configure-argo:
+  # configure-argo:
     
-    # needs: install-argo
-    runs-on: ubuntu-latest 
-    if: contains(github.event.head_commit.message, 'argo-cc')
-    steps:    
-      - name: Checkout code
-        uses: actions/checkout@v4.1.6
-      - name: Setup Google Cloud
-        uses: ./.github/actions/gcloud-credentials
-        with:
-          credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
-      - name: Install gke-gcloud-auth-plugin
-        run: gcloud components install gke-gcloud-auth-plugin
+  #   # needs: install-argo
+  #   runs-on: ubuntu-latest 
+  #   if: contains(github.event.head_commit.message, 'argo-cc')
+  #   steps:    
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4.1.6
+  #     - name: Setup Google Cloud
+  #       uses: ./.github/actions/gcloud-credentials
+  #       with:
+  #         credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+  #     - name: Install gke-gcloud-auth-plugin
+  #       run: gcloud components install gke-gcloud-auth-plugin
           
-      - name: Get Kubernetes Credentials
-        run: |
-          gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
+  #     - name: Get Kubernetes Credentials
+  #       run: |
+  #         gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
       
-      - name: Create Cloudflare API Token Secret
-        env:
-          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-        run: |
-          kubectl create secret generic cloudflare-api-token-secret \
-            --from-literal=api-token=$CLOUDFLARE_TOKEN \
-            --namespace default
+  #     - name: Create Cloudflare API Token Secret
+  #       env:
+  #         CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+  #       run: |
+  #         kubectl create secret generic cloudflare-token-secret \
+  #           --from-literal=cloudflare-token=$CLOUDFLARE_TOKEN \
+  #           --namespace services-cert-manager || echo " secret already exists" 
       
-      - name: Install Argo CD CLI
-        run: |
-          curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-          chmod +x /usr/local/bin/argocd
+  #     - name: Install Argo CD CLI
+  #       run: |
+  #         curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+  #         chmod +x /usr/local/bin/argocd
       
-      - name: Start Port Forwarding
-        run: |
-          kubectl wait --for=condition=available --timeout=120s deploy/argocd-server -n argocd
-          kubectl port-forward svc/argocd-server -n argocd 8080:443 &
-          sleep 10  # Gives additional time for the port forwarding to establish
-        shell: bash
-      - name: Retrieve Argo CD API server password
-        run: |          
-          ARGOCD_PWD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-          echo "ARGOCD_PWD=$ARGOCD_PWD" >> $GITHUB_ENV
+  #     - name: Start Port Forwarding
+  #       run: |
+  #         kubectl wait --for=condition=available --timeout=120s deploy/argocd-server -n argocd
+  #         kubectl port-forward svc/argocd-server -n argocd 8080:443 &
+  #         sleep 10  # Gives additional time for the port forwarding to establish
+  #       shell: bash
+  #     - name: Retrieve Argo CD API server password
+  #       run: |          
+  #         ARGOCD_PWD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+  #         echo "ARGOCD_PWD=$ARGOCD_PWD" >> $GITHUB_ENV
 
-      - name: Login to Argo CD
-        run: echo y | argocd login localhost:8080 --username admin --password $ARGOCD_PWD --insecure
-        env:
-          ARGOCD_PWD: ${{ env.ARGOCD_PWD }}
+  #     - name: Login to Argo CD
+  #       run: echo y | argocd login localhost:8080 --username admin --password $ARGOCD_PWD --insecure
+  #       env:
+  #         ARGOCD_PWD: ${{ env.ARGOCD_PWD }}
       
-      # - name: Check if Root Application Exists
-      #   id: check_app
-      #   continue-on-error: true
-      #   run: |
-      #     argocd app get root-application
-      #     if [ $? -eq 0 ]; then
-      #       echo "Root application already exists."
-      #       echo "::set-output name=exists::true"
-      #     else
-      #       echo "Root application does not exist."
-      #       echo "::set-output name=exists::false"
-      #     fi
-      - name: Create Root Application
-        # if: steps.check_app.outputs.exists == 'false'
-        run: |
-          kubectl apply -f SD2024/tif/cloud-shared-services/argocd/root-project/01-infra-services-appproject.yaml
-          kubectl apply -f SD2024/tif/cloud-shared-services/argocd/root-project/03-infra-application.yaml
-          kubectl apply -f SD2024/tif/cloud-shared-services/argocd/root-project/02-app-services-appproject.yaml
-          kubectl apply -f SD2024/tif/cloud-shared-services/argocd/root-project/04-app-application.yaml
+  #     # - name: Check if Root Application Exists
+  #     #   id: check_app
+  #     #   continue-on-error: true
+  #     #   run: |
+  #     #     argocd app get root-application
+  #     #     if [ $? -eq 0 ]; then
+  #     #       echo "Root application already exists."
+  #     #       echo "::set-output name=exists::true"
+  #     #     else
+  #     #       echo "Root application does not exist."
+  #     #       echo "::set-output name=exists::false"
+  #     #     fi
+  #     - name: Create Root Application
+  #       # if: steps.check_app.outputs.exists == 'false'
+  #       run: |
+  #         kubectl apply -f SD2024/tif/cloud-shared-services/argocd/root-project/01-infra-services-appproject.yaml
+  #         kubectl apply -f SD2024/tif/cloud-shared-services/argocd/root-project/03-infra-application.yaml
+  #         kubectl apply -f SD2024/tif/cloud-shared-services/argocd/root-project/02-app-services-appproject.yaml
+  #         kubectl apply -f SD2024/tif/cloud-shared-services/argocd/root-project/04-app-application.yaml
 
-      - name: Cleanup Port Forwarding
-        if: always()
-        run: killall kubectl
+  #     - name: Cleanup Port Forwarding
+  #       if: always()
+  #       run: killall kubectl
 
