@@ -135,6 +135,7 @@ jobs:
             --from-literal=cloudflare-token=$CLOUDFLARE_TOKEN \
             --from-literal=zone-id=$CLOUDFLARE_ZONE_ID \
             --namespace services-cert-manager || echo " secret already exists" 
+          kubectl create namespace services-traefik
           kubectl create role service-viewer --verb=get,list --resource=services -n services-traefik && kubectl create rolebinding service-viewer-binding --role=service-viewer --serviceaccount=services-cert-manager:default -n services-traefik
 
       - name: Install Argo CD CLI
