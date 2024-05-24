@@ -99,7 +99,7 @@ jobs:
   #       run: | 
   #         kubectl create namespace argocd
   #         kubectl create namespace services
-  #         create secret generic cloudflare-api-token-secret --from-literal=api-token='kdJfh7gNJOUt0w3OIJ0SqLibM3IEIB7dQo-eNC-t' --namespace whoami
+  
   #         #kubectl create quota argocd-quota --namespace=argocd --hard=limits.cpu=3,limits.memory=3Gi,requests.cpu=3,requests.memory=3Gi
 
   #     - name: Install Argo CD
