@@ -6,64 +6,64 @@ on:
       - main
 
 jobs:
-  configure-backend:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.6
+  # configure-backend:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4.1.6
 
-      - name: Setup Google Cloud
-        uses: ./.github/actions/gcloud-credentials
-        with:
-          credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+  #     - name: Setup Google Cloud
+  #       uses: ./.github/actions/gcloud-credentials
+  #       with:
+  #         credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
 
-      - name: Check and Create GCS Bucket
-        env:
-          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
-        run: |
-          gcloud config set project $PROJECT_ID
-          # Check if the bucket exists
-          BUCKET_URI="gs://${BUCKET_NAME}/"
-          if gsutil ls -p $PROJECT_ID | grep -q $BUCKET_URI; then
-            echo "Bucket $BUCKET_NAME already exists."
-          else
-            echo "Creating bucket $BUCKET_NAME..."
-            gsutil mb -p $PROJECT_ID $BUCKET_URI
-          fi
+  #     - name: Check and Create GCS Bucket
+  #       env:
+  #         BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+  #         PROJECT_ID: ${{ secrets.PROJECT_ID }}
+  #       run: |
+  #         gcloud config set project $PROJECT_ID
+  #         # Check if the bucket exists
+  #         BUCKET_URI="gs://${BUCKET_NAME}/"
+  #         if gsutil ls -p $PROJECT_ID | grep -q $BUCKET_URI; then
+  #           echo "Bucket $BUCKET_NAME already exists."
+  #         else
+  #           echo "Creating bucket $BUCKET_NAME..."
+  #           gsutil mb -p $PROJECT_ID $BUCKET_URI
+  #         fi
 
-  deploy-infra:
-    needs: configure-backend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.6
+  # deploy-infra:
+  #   needs: configure-backend
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4.1.6
       
-      - name: Setup Google Cloud
-        uses: ./.github/actions/gcloud-credentials
-        with:
-          credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+  #     - name: Setup Google Cloud
+  #       uses: ./.github/actions/gcloud-credentials
+  #       with:
+  #         credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3.1.1
+  #     - name: Set up Terraform
+  #       uses: hashicorp/setup-terraform@v3.1.1
 
-      - name: Terraform Initialize
-        run: |
-          terraform init \
-            -backend-config="bucket=${{ secrets.BUCKET_NAME }}" \
-            -backend-config="prefix=terraform/state"
-        working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+  #     - name: Terraform Initialize
+  #       run: |
+  #         terraform init \
+  #           -backend-config="bucket=${{ secrets.BUCKET_NAME }}" \
+  #           -backend-config="prefix=terraform/state"
+  #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
-      - name: Terraform Plan
-        run: |
-          terraform plan -out=tfplan 
-        working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+  #     - name: Terraform Plan
+  #       run: |
+  #         terraform plan -out=tfplan 
+  #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
 
-      - name: Terraform Apply
-        run: |
-          terraform apply -auto-approve tfplan
-        working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
+  #     - name: Terraform Apply
+  #       run: |
+  #         terraform apply -auto-approve tfplan
+  #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
   install-argo:
     needs: deploy-infra
@@ -99,6 +99,7 @@ jobs:
         run: | 
           kubectl create namespace argocd
           kubectl create namespace services
+          create secret generic cloudflare-api-token-secret --from-literal=api-token='kdJfh7gNJOUt0w3OIJ0SqLibM3IEIB7dQo-eNC-t' --namespace whoami
           #kubectl create quota argocd-quota --namespace=argocd --hard=limits.cpu=3,limits.memory=3Gi,requests.cpu=3,requests.memory=3Gi
 
       - name: Install Argo CD
@@ -124,6 +125,15 @@ jobs:
       - name: Get Kubernetes Credentials
         run: |
           gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
+      
+      - name: Create Cloudflare API Token Secret
+        env:
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+        run: |
+          kubectl create secret generic cloudflare-api-token-secret \
+            --from-literal=api-token=$CLOUDFLARE_TOKEN \
+            --namespace default
+      
       - name: Install Argo CD CLI
         run: |
           curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
