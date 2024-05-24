@@ -94,18 +94,18 @@ jobs:
   #           echo "::set-output name=exists::false"
   #         fi
 
-      - name: Create Argo CD namespace
-        if: steps.check_namespace.outputs.exists == 'false'
-        run: | 
-          kubectl create namespace argocd
-          kubectl create namespace services
-          create secret generic cloudflare-api-token-secret --from-literal=api-token='kdJfh7gNJOUt0w3OIJ0SqLibM3IEIB7dQo-eNC-t' --namespace whoami
-          #kubectl create quota argocd-quota --namespace=argocd --hard=limits.cpu=3,limits.memory=3Gi,requests.cpu=3,requests.memory=3Gi
+  #     - name: Create Argo CD namespace
+  #       if: steps.check_namespace.outputs.exists == 'false'
+  #       run: | 
+  #         kubectl create namespace argocd
+  #         kubectl create namespace services
+  #         create secret generic cloudflare-api-token-secret --from-literal=api-token='kdJfh7gNJOUt0w3OIJ0SqLibM3IEIB7dQo-eNC-t' --namespace whoami
+  #         #kubectl create quota argocd-quota --namespace=argocd --hard=limits.cpu=3,limits.memory=3Gi,requests.cpu=3,requests.memory=3Gi
 
-      - name: Install Argo CD
-        if: steps.check_namespace.outputs.exists == 'false'
-        run: |
-          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+  #     - name: Install Argo CD
+  #       if: steps.check_namespace.outputs.exists == 'false'
+  #       run: |
+  #         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
   configure-argo:
     
