@@ -65,34 +65,34 @@ jobs:
   #         terraform apply -auto-approve tfplan
   #       working-directory: SD2024/tif/cloud-shared-services/05-gke_cluster/terraform
 
-  install-argo:
-    needs: deploy-infra
-    runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, 'argo-ci')
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.6
-      - name: Setup Google Cloud
-        uses: ./.github/actions/gcloud-credentials
-        with:
-          credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
-      - name: Install gke-gcloud-auth-plugin
-        run: gcloud components install gke-gcloud-auth-plugin
+  # install-argo:
+  #   needs: deploy-infra
+  #   runs-on: ubuntu-latest
+  #   if: contains(github.event.head_commit.message, 'argo-ci')
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4.1.6
+  #     - name: Setup Google Cloud
+  #       uses: ./.github/actions/gcloud-credentials
+  #       with:
+  #         credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+  #     - name: Install gke-gcloud-auth-plugin
+  #       run: gcloud components install gke-gcloud-auth-plugin
           
-      - name: Get Kubernetes Credentials
-        run: |
-          gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
+  #     - name: Get Kubernetes Credentials
+  #       run: |
+  #         gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
 
-      - name: Check if Argo CD namespace exists
-        id: check_namespace
-        run: |
-          if kubectl get namespace argocd; then
-            echo "Namespace argocd already exists."
-            echo "::set-output name=exists::true"
-          else
-            echo "Namespace argocd does not exist."
-            echo "::set-output name=exists::false"
-          fi
+  #     - name: Check if Argo CD namespace exists
+  #       id: check_namespace
+  #       run: |
+  #         if kubectl get namespace argocd; then
+  #           echo "Namespace argocd already exists."
+  #           echo "::set-output name=exists::true"
+  #         else
+  #           echo "Namespace argocd does not exist."
+  #           echo "::set-output name=exists::false"
+  #         fi
 
       - name: Create Argo CD namespace
         if: steps.check_namespace.outputs.exists == 'false'
