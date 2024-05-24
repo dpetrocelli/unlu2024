@@ -30,7 +30,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: infra-services2
+  name: infra-services
   namespace: argocd
 spec:
   description: "Root application project for managing infra-services components"

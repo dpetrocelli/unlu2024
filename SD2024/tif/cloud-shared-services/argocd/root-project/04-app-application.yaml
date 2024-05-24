@@ -10,7 +10,7 @@ spec:
     name: in-cluster
     namespace: argocd
   source:
-    path: apps/definitions 
+    path: apps/definitions/nginx
     repoURL: 'https://github.com/dpetrocelli/argocd-apps.git'
     targetRevision: HEAD
   project: app-services

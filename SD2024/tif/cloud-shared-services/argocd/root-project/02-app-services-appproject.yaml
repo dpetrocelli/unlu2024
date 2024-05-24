@@ -8,18 +8,10 @@ spec:
   sourceRepos:
     - '*'
   destinations:
+    - server: 'https://kubernetes.default.svc'
+      namespace: '*'
     - server: '*'
-      namespace: 'apps-*'  # For all namespaces starting with 'services-'
-    - server: '*'
-      namespace: 'argocd'  
+      namespace: '*'
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'
-    - group: 'apiextensions.k8s.io'
-      kind: 'CustomResourceDefinition'
-    - group: 'rbac.authorization.k8s.io'
-      kind: 'ClusterRole'
-    - group: 'rbac.authorization.k8s.io'
-      kind: 'ClusterRoleBinding'
-    - group: 'admissionregistration.k8s.io'
-      kind: 'ValidatingWebhookConfiguration'
