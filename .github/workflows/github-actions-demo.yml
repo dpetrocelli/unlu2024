@@ -108,7 +108,7 @@ jobs:
 
   configure-argo:
     
-    needs: install-argo
+    # needs: install-argo
     runs-on: ubuntu-latest 
     if: contains(github.event.head_commit.message, 'argo-cc')
     steps:    
@@ -162,8 +162,8 @@ jobs:
         run: |
           kubectl apply -f SD2024/tif/cloud-shared-services/argocd/root-project/01-infra-services-appproject.yaml
           kubectl apply -f SD2024/tif/cloud-shared-services/argocd/root-project/03-infra-application.yaml
-          kubectl apply -f unlu2024/SD2024/tif/cloud-shared-services/argocd/root-project/02-app-services-appproject.yaml
-          kubectl apply -f unlu2024/SD2024/tif/cloud-shared-services/argocd/root-project/04-app-application.yaml
+          kubectl apply -f SD2024/tif/cloud-shared-services/argocd/root-project/02-app-services-appproject.yaml
+          kubectl apply -f SD2024/tif/cloud-shared-services/argocd/root-project/04-app-application.yaml
 
       - name: Cleanup Port Forwarding
         if: always()
