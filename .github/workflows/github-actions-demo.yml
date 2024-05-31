@@ -320,6 +320,7 @@ jobs:
             echo "::set-output name=exists::false"
           fi
 
+
       - name: Create Argo CD namespace
         if: steps.check_namespace.outputs.exists == 'false'
         run: | 
