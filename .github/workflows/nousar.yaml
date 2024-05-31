@@ -1,0 +1,25 @@
+# jobs:
+#   configurar-cluster:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4.1.6
+
+#       - name: Setup Google Cloud
+#         uses: ./.github/actions/gcloud-credentials
+#         with:
+#           credentials_json: ${{ secrets.GPC_CREDENTIALS_FILE }}
+      
+#       - name: Install gke-gcloud-auth-plugin
+#         run: gcloud components install gke-gcloud-auth-plugin
+          
+#       - name: Get Kubernetes Credentials
+#         run: |
+#           gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
+      
+#       - name: Instalar RabbitMQ
+#         run: |
+#           kubectl apply -f .
+#           HELM install rabbitmq-operator .
+#             kubectl apply -f deployment.yaml
+#             kubectl apply -f service.yaml 
