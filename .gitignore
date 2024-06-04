@@ -69,3 +69,5 @@ SD2024/class5_sobel/ejemplo/**
 **./*pythonsdk/env/
 **/*.pem
 **/**kubeconfig**
+
+**.sh**
