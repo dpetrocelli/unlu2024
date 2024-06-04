@@ -111,6 +111,7 @@ jobs:
         run: |
           gcloud container clusters get-credentials primary --zone "us-east1-b" --project ${{ secrets.PROJECT_ID }}
 
+
       - name: Check if Argo CD namespace exists
         id: check_namespace
         run: |
