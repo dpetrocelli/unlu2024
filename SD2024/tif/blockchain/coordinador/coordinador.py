@@ -161,8 +161,6 @@ def receive_solved_task():
             
             return jsonify({'message': 'Block validated and added to the blockchain.'}), 201
      
-     
-        
           
     else:
         return jsonify({'message': 'Invalid hash. Discarding the package.'}), 400
