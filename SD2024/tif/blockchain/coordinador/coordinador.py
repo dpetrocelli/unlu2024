@@ -71,8 +71,8 @@ def process_packages():
 
         
 # Connect to RabbitMQ server
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost', port=5672,
-                                                               credentials=pika.PlainCredentials('rabbitmq', 'rabbitmq')))
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq.10.net.ar', port=5672, credentials=pika.PlainCredentials('default_user_Qbk1npkSCU-5XCFtVIo', '7Fzm8EEge3q2E21Uy2dldiok8jrIEwPT')))
+
 
 channel = connection.channel()
 # Declare queues

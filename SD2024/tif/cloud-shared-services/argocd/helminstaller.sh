@@ -45,8 +45,13 @@ echo 'export PATH=$HOME/istio/bin:$PATH' >> ~/.bashrc
 # Step 9: Source the profile script to update the current terminal session (for bash)
 source ~/.bashrc
 
+ ~/istio  istioctl install --set profile=demo -y
 # Note: For zsh users, use ~/.zshrc instead of ~/.bashrc in steps 8 and 9.
 
-kubectl create secret generic cloudflare-token-secret \                                         INT | primary kube 
+kubectl create secret generic cloudflare-token-secret \                                         
             --from-literal=cloudflare-token=_pZ1lYoV4XSfbsFe999WWDoxIOJumIkbAPG896FZ \
             --namespace cert-manager || echo " secret already exists"
+
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm install rabbitmq-operator bitnami/rabbitmq-cluster-operator --namespace services-rabbitmq --create-namespace --version 4.2.10

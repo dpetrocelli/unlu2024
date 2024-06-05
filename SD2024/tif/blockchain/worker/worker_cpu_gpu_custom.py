@@ -139,7 +139,7 @@ def on_message_received(ch, method, properties, body):
 
 def main():
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='localhost', port=5672, credentials=pika.PlainCredentials('rabbitmq', 'rabbitmq'))
+        pika.ConnectionParameters(host='rabbitmq.10.net.ar', port=5672, credentials=pika.PlainCredentials('default_user_Qbk1npkSCU-5XCFtVIo', '7Fzm8EEge3q2E21Uy2dldiok8jrIEwPT'))
     )
     channel = connection.channel()
     channel.exchange_declare(exchange='block_challenge', exchange_type='topic', durable=True)

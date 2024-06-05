@@ -3,5 +3,5 @@ pika
 redis
 requests
 numpy
-cupy-cuda12x
+# cupy-cuda12x
 
