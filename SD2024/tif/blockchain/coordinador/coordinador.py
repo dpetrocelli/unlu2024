@@ -160,6 +160,8 @@ def receive_solved_task():
             redis_utils.post_message(message=data)
             
             return jsonify({'message': 'Block validated and added to the blockchain.'}), 201
+     
+     
         
           
     else:
