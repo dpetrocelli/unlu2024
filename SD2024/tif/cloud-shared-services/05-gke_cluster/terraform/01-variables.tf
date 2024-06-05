@@ -19,5 +19,5 @@ variable "zone" {
 
 variable "project_id" {
   type    = string
-  default = "windy-hangar-425422-u2"
+  default = "sd2024unluv3"
 }
